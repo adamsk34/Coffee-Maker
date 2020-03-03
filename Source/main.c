@@ -44,7 +44,7 @@ enum buttonStates {
 	buttonDown,
 	buttonUp
 };
-int currButtonState = buttonUp;
+int currButtonState = buttonUp;// accounts for debounce
 
 int coffeeSelected = mochaCoffee;
 
@@ -86,6 +86,8 @@ void nextCoffeeType() {
 	}
 }
 
+// single press (not double press, not long press)
+// only called once for each single press
 void singlePressButtonOccurred() {
 	switch(currState) {
 		case cyclingCoffeeTypes:
@@ -95,11 +97,13 @@ void singlePressButtonOccurred() {
 }
 
 // very recently, button pressed down (accounts for debouncing)
+// only called once for each press
 void pressButtonOccurred() {
 	
 }
 
 // very recently, finger taken off button (accounts for debouncing)
+// only called once for each unpress
 void unpressButtonOccurred() {
 	// TODO: should wait 500ms to make sure not a double press
 	singlePressButtonOccurred();
