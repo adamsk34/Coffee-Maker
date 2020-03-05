@@ -10,15 +10,20 @@
 #define STACK_SIZE_MIN	128	/* usStackDepth	- the stack size DEFINED IN WORDS.*/
 #define DEBOUNCE_WINDOW 20
 #define DOUBLE_PRESS_WINDOW 500
+#define LONG_PRESS_WINDOW 3000
 
 void vButtonEventGenerator(void *pvParameters);
 void vButtonListener(void *pvParameters);
+void vDPDisableSinglePress(void *pvParameters);
 void vIdle(void *pvParameters);
 void vShowCoffeeSelected(void *pvParameters);
 void vWaitIfSinglePressed(void *pvParameters);
+void vWaitIfLongPressed(void *pvParameters);
 
-void singlePressButtonEvent(void);
+void doublePressButtonEvent(void);
+void longPressButtonEvent(void);
 void pressButtonEvent(void);
+void singlePressButtonEvent(void);
 void unpressButtonEvent(void);
 
 void nextCoffeeType(void);
@@ -54,9 +59,13 @@ int coffeeSelected = mochaCoffee;
 int pressButtonOccurred = 0;// false
 int unpressButtonOccurred = 0;// false
 
-int enableSinglePress = 1;// true
+// double press disable single press
+int dpDisableSinglePress = 0;// false
+// long press disable single press
+int lpDisableSinglePress = 0;// false
 
 TickType_t ticksLastPress = NULL;
+TickType_t ticksLastUnpress = NULL;
 
 GPIO_InitTypeDef GPIO_Initstructure;
 TIM_TimeBaseInitTypeDef timer_InitStructure;
@@ -97,34 +106,6 @@ void nextCoffeeType() {
 	}
 }
 
-// double press (not single press, not long press)
-// only called once for each double press
-void doublePressButtonEvent() {
-	STM_EVAL_LEDToggle(LED_GREEN);
-}
-
-// single press (not double press, not long press)
-// only called once for each single press
-void singlePressButtonEvent() {
-	switch(currState) {
-		case cyclingCoffeeTypes:
-			nextCoffeeType();
-			break;
-	}
-}
-
-// very recently, button pressed down (accounts for debouncing)
-// only called once for each press
-void pressButtonEvent() {
-	
-}
-
-// very recently, finger taken off button (accounts for debouncing)
-// only called once for each unpress
-void unpressButtonEvent() {
-	
-}
-
 void vButtonListener(void *pvParameters) {
 	uint8_t button_pin = 0;
 	uint8_t late_button_pin = 0;// what the value of `button_pin` was, last loop iteration
@@ -148,10 +129,32 @@ void vWaitIfSinglePressed(void *pvParameters) {
 	
 	vTaskDelay(DOUBLE_PRESS_WINDOW);
 
-	if(enableSinglePress) {// check if a double press has not happened
+	if(!dpDisableSinglePress) {// check if a double press has not happened
 		singlePressButtonEvent();
 	}
-	enableSinglePress = 1;// true
+	
+	vTaskDelete(NULL);
+}
+
+void vWaitIfLongPressed(void *pvParameters) {	
+	TickType_t origTicksLastUnpress = ticksLastUnpress;
+	
+	vTaskDelay(LONG_PRESS_WINDOW);
+	
+	// check if button was released during delay ^
+	if(ticksLastUnpress < ticksLastPress && origTicksLastUnpress == ticksLastUnpress) {
+		longPressButtonEvent();
+		lpDisableSinglePress = 1;// true
+	}
+	
+	vTaskDelete(NULL);
+}
+
+// double press disable single press
+void vDPDisableSinglePress(void *pvParameters) {
+	vTaskDelay(DOUBLE_PRESS_WINDOW);
+	
+	dpDisableSinglePress--;
 	
 	vTaskDelete(NULL);
 }
@@ -163,17 +166,28 @@ void vButtonEventGenerator(void *pvParameters) {
 			pressButtonEvent();
 			if(ticksLastPress != NULL && ticksLastPress > xTaskGetTickCount() - DOUBLE_PRESS_WINDOW) {
 				doublePressButtonEvent();
-				enableSinglePress = 0;// false
+				dpDisableSinglePress++;
+				
+				xTaskCreate( vDPDisableSinglePress, (const char*)"Double Press (Temporarily) Disables Single Press Task",
+					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 			}
 			ticksLastPress = xTaskGetTickCount();
+			
+			
+			
+			xTaskCreate( vWaitIfLongPressed, (const char*)"Wait If Long Pressed Task",
+					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 		} else if(unpressButtonOccurred) {
 			unpressButtonOccurred = 0;// false
 			unpressButtonEvent();
+			ticksLastUnpress = xTaskGetTickCount();
 			
-			if(enableSinglePress) {
+			if(!dpDisableSinglePress && !lpDisableSinglePress) {
 				xTaskCreate( vWaitIfSinglePressed, (const char*)"Wait If Single Pressed Task",
 					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 			}
+			
+			lpDisableSinglePress = 0;// false
 		}
 	}
 }
@@ -198,6 +212,45 @@ void vShowCoffeeSelected(void *pvParameters) {
 
 void vIdle(void *pvParameters) {
 	while(1);
+}
+
+// ************************************** Button Events **************************************
+
+// double press (not single press, not long press)
+// only called once for each double press
+void doublePressButtonEvent() {
+	
+}
+
+// long press (not single press, not double press)
+// only called once for each long press
+void longPressButtonEvent() {
+	STM_EVAL_LEDToggle(LED_GREEN);
+}
+
+
+// single press (not double press, not long press)
+// only called once for each single press
+void singlePressButtonEvent() {
+	switch(currState) {
+		case cyclingCoffeeTypes:
+			nextCoffeeType();
+			break;
+	}
+}
+
+// very recently, button was pressed down (accounts for debouncing)
+// this event can be a part of a single, double, or long press
+// only called once for each press
+void pressButtonEvent() {
+	
+}
+
+// very recently, finger taken off button (accounts for debouncing
+// this event can be a part of a single, double, or long press
+// only called once for each unpress
+void unpressButtonEvent() {
+	
 }
 
 // ************************************** Timers **************************************
