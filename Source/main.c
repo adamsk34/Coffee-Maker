@@ -20,8 +20,10 @@ void vShowCoffeeSelected(void *pvParameters);
 void vWaitIfSinglePressed(void *pvParameters);
 void vWaitIfLongPressed(void *pvParameters);
 
-void singlePressButtonEvent(void);
+void doublePressButtonEvent(void);
+void longPressButtonEvent(void);
 void pressButtonEvent(void);
+void singlePressButtonEvent(void);
 void unpressButtonEvent(void);
 
 void nextCoffeeType(void);
@@ -102,41 +104,6 @@ void nextCoffeeType() {
 	} else if(coffeeSelected == mochaCoffee) {
 		coffeeSelected = espressoCoffee;
 	}
-}
-
-// double press (not single press, not long press)
-// only called once for each double press
-void doublePressButtonEvent() {
-	
-}
-
-// long press (not single press, not double press)
-// only called once for each long press
-void longPressButtonEvent() {
-	STM_EVAL_LEDToggle(LED_GREEN);
-}
-
-
-// single press (not double press, not long press)
-// only called once for each single press
-void singlePressButtonEvent() {
-	switch(currState) {
-		case cyclingCoffeeTypes:
-			nextCoffeeType();
-			break;
-	}
-}
-
-// very recently, button pressed down (accounts for debouncing)
-// only called once for each press
-void pressButtonEvent() {
-	
-}
-
-// very recently, finger taken off button (accounts for debouncing)
-// only called once for each unpress
-void unpressButtonEvent() {
-	
 }
 
 void vButtonListener(void *pvParameters) {
@@ -245,6 +212,45 @@ void vShowCoffeeSelected(void *pvParameters) {
 
 void vIdle(void *pvParameters) {
 	while(1);
+}
+
+// ************************************** Button Events **************************************
+
+// double press (not single press, not long press)
+// only called once for each double press
+void doublePressButtonEvent() {
+	
+}
+
+// long press (not single press, not double press)
+// only called once for each long press
+void longPressButtonEvent() {
+	STM_EVAL_LEDToggle(LED_GREEN);
+}
+
+
+// single press (not double press, not long press)
+// only called once for each single press
+void singlePressButtonEvent() {
+	switch(currState) {
+		case cyclingCoffeeTypes:
+			nextCoffeeType();
+			break;
+	}
+}
+
+// very recently, button was pressed down (accounts for debouncing)
+// this event can be a part of a single, double, or long press
+// only called once for each press
+void pressButtonEvent() {
+	
+}
+
+// very recently, finger taken off button (accounts for debouncing
+// this event can be a part of a single, double, or long press
+// only called once for each unpress
+void unpressButtonEvent() {
+	
 }
 
 // ************************************** Timers **************************************
