@@ -10,7 +10,8 @@
 #define STACK_SIZE_MIN	128	/* usStackDepth	- the stack size DEFINED IN WORDS.*/
 #define DEBOUNCE_WINDOW 20
 
-void vButton(void *pvParameters);
+void vButtonEventGenerator(void *pvParameters);
+void vButtonListener(void *pvParameters);
 void vIdle(void *pvParameters);
 void vShowCoffeeSelected(void *pvParameters);
 
@@ -48,6 +49,9 @@ int currButtonState = buttonUp;// accounts for debounce
 
 int coffeeSelected = mochaCoffee;
 
+int pressButtonEvent = 0;// false
+int unpressButtonEvent = 0;// false
+
 GPIO_InitTypeDef GPIO_Initstructure;
 TIM_TimeBaseInitTypeDef timer_InitStructure;
 
@@ -65,13 +69,14 @@ int main(void) {
 	xTaskCreate( vIdle, (const char*)"Idle Task",
 		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 	
-	xTaskCreate( vButton, (const char*)"Button Task",
+	xTaskCreate( vButtonListener, (const char*)"Button Listener Task",
 		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 	
 	xTaskCreate( vShowCoffeeSelected, (const char*)"LEDs Show Selected Coffee Task",
 		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 	
-	initDebounceTimer();
+	xTaskCreate( vButtonEventGenerator, (const char*)"Button Event Generator Task",
+		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 	
 	vTaskStartScheduler();
 }
@@ -109,7 +114,7 @@ void unpressButtonOccurred() {
 	singlePressButtonOccurred();
 }
 
-void vButton(void *pvParameters) {
+void vButtonListener(void *pvParameters) {
 	uint8_t button_pin = 0;
 	uint8_t late_button_pin = 0;// what the value of `button_pin` was, last loop iteration
 
@@ -124,6 +129,18 @@ void vButton(void *pvParameters) {
 			if(late_button_pin) {// true if button_pin JUST turned off
 				initDebounceTimer();
 			}
+		}
+	}
+}
+
+void vButtonEventGenerator(void *pvParameters) {
+	while(1) {
+		if(pressButtonEvent) {
+			pressButtonEvent = 0;// false
+			pressButtonOccurred();
+		} else if(unpressButtonEvent) {
+			unpressButtonEvent = 0;// false
+			unpressButtonOccurred();
 		}
 	}
 }
@@ -190,7 +207,7 @@ void TIM2_IRQHandler()
 		if(button_pin) {
 			if(currDebounceState == activeDebounce) {
 				if(currButtonState == buttonUp) {// true if finger VERY recently pushed button down
-					pressButtonOccurred();
+					pressButtonEvent = 1;// true
 				}
 				currDebounceState = doneDebounce;// false
 				currButtonState = buttonDown;
@@ -200,7 +217,7 @@ void TIM2_IRQHandler()
 		} else {
 			if(currDebounceState == activeDebounce) {
 				if(currButtonState == buttonDown) {// true if finger VERY recently taken off button
-					unpressButtonOccurred();
+					unpressButtonEvent = 1;// true
 				}
 				currDebounceState = doneDebounce;// false
 				currButtonState = buttonUp;

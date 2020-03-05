@@ -36,7 +36,7 @@ I (.\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h)(0x5E4B3C85)
 I (.\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_usart.h)(0x5E4B3C85)
 I (.\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_wwdg.h)(0x5E4B3C85)
 I (.\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h)(0x5E4B3C84)
-F (.\Source\main.c)(0x5E604FF3)(-c --cpu Cortex-M4.fp.sp -D__RTX -D__EVAL -g -O0 --apcs=interwork -I .\Libraries\CMSIS\Include -I .\Libraries\CMSIS\Device\ST\STM32F4xx\Include -I .\Libraries\STM32F4xx_StdPeriph_Driver\inc -I .\FreeRTOS\include -I .\FreeRTOS\portable\RVDS\ARM_CM4F -I .\Include-IC:\Keil_v5\ARM\RV31\Inc-I.\RTE\_freertos_project-IC:\Users\Kevin\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include-IC:\Users\Kevin\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\1.0.8\Device\Include-D__UVISION_VERSION="529" -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DSTM32F40_41xx -DHSE_VALUE="8000000"-o .\output\main.o --omf_browse .\output\main.crf --depend .\output\main.d)
+F (.\Source\main.c)(0x5E605D68)(-c --cpu Cortex-M4.fp.sp -D__RTX -D__EVAL -g -O0 --apcs=interwork -I .\Libraries\CMSIS\Include -I .\Libraries\CMSIS\Device\ST\STM32F4xx\Include -I .\Libraries\STM32F4xx_StdPeriph_Driver\inc -I .\FreeRTOS\include -I .\FreeRTOS\portable\RVDS\ARM_CM4F -I .\Include-IC:\Keil_v5\ARM\RV31\Inc-I.\RTE\_freertos_project-IC:\Users\Kevin\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include-IC:\Users\Kevin\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\1.0.8\Device\Include-D__UVISION_VERSION="529" -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DSTM32F40_41xx -DHSE_VALUE="8000000"-o .\output\main.o --omf_browse .\output\main.crf --depend .\output\main.d)
 I (.\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x5E4B3C82)
 I (.\Libraries\CMSIS\Include\core_cm4.h)(0x5E4B3C84)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9B96F8)
@@ -74,7 +74,7 @@ I (.\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h)(0x5E4B3C84)
 I (.\Include\discoveryf4utils.h)(0x5E4B3C82)
 I (.\FreeRTOS\include\FreeRTOS.h)(0x5E4B3C81)
 I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x5D9B96F8)
-I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E4B3C81)
+I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E605995)
 I (.\FreeRTOS\include\projdefs.h)(0x5E4B3C81)
 I (.\FreeRTOS\include\portable.h)(0x5E4B3C81)
 I (.\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h)(0x5E4B3C82)
@@ -159,7 +159,7 @@ F (.\FreeRTOS\croutine.c)(0x5E4B3C81)(-c --cpu Cortex-M4.fp.sp -D__RTX -D__EVAL 
 I (.\FreeRTOS\include\FreeRTOS.h)(0x5E4B3C81)
 I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x5D9B96F8)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9B96F8)
-I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E4B3C81)
+I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E605995)
 I (.\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x5E4B3C82)
 I (.\Libraries\CMSIS\Include\core_cm4.h)(0x5E4B3C84)
 I (.\Libraries\CMSIS\Include\core_cmInstr.h)(0x5E4B3C84)
@@ -205,7 +205,7 @@ I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5D9B96FA)
 I (.\FreeRTOS\include\FreeRTOS.h)(0x5E4B3C81)
 I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x5D9B96F8)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9B96F8)
-I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E4B3C81)
+I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E605995)
 I (.\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x5E4B3C82)
 I (.\Libraries\CMSIS\Include\core_cm4.h)(0x5E4B3C84)
 I (.\Libraries\CMSIS\Include\core_cmInstr.h)(0x5E4B3C84)
@@ -252,7 +252,7 @@ I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5D9B96FA)
 I (.\FreeRTOS\include\FreeRTOS.h)(0x5E4B3C81)
 I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x5D9B96F8)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9B96F8)
-I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E4B3C81)
+I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E605995)
 I (.\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x5E4B3C82)
 I (.\Libraries\CMSIS\Include\core_cm4.h)(0x5E4B3C84)
 I (.\Libraries\CMSIS\Include\core_cmInstr.h)(0x5E4B3C84)
@@ -297,7 +297,7 @@ I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5D9B96F8)
 I (.\FreeRTOS\include\FreeRTOS.h)(0x5E4B3C81)
 I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x5D9B96F8)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9B96F8)
-I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E4B3C81)
+I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E605995)
 I (.\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x5E4B3C82)
 I (.\Libraries\CMSIS\Include\core_cm4.h)(0x5E4B3C84)
 I (.\Libraries\CMSIS\Include\core_cmInstr.h)(0x5E4B3C84)
@@ -344,7 +344,7 @@ I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5D9B96F8)
 I (.\FreeRTOS\include\FreeRTOS.h)(0x5E4B3C81)
 I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x5D9B96F8)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9B96F8)
-I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E4B3C81)
+I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E605995)
 I (.\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x5E4B3C82)
 I (.\Libraries\CMSIS\Include\core_cm4.h)(0x5E4B3C84)
 I (.\Libraries\CMSIS\Include\core_cmInstr.h)(0x5E4B3C84)
@@ -391,7 +391,7 @@ I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5D9B96FA)
 I (.\FreeRTOS\include\FreeRTOS.h)(0x5E4B3C81)
 I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x5D9B96F8)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9B96F8)
-I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E4B3C81)
+I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E605995)
 I (.\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x5E4B3C82)
 I (.\Libraries\CMSIS\Include\core_cm4.h)(0x5E4B3C84)
 I (.\Libraries\CMSIS\Include\core_cmInstr.h)(0x5E4B3C84)
@@ -437,7 +437,7 @@ F (.\FreeRTOS\portable\RVDS\ARM_CM4F\port.c)(0x5E4B3C82)(-c --cpu Cortex-M4.fp.s
 I (.\FreeRTOS\include\FreeRTOS.h)(0x5E4B3C81)
 I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x5D9B96F8)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9B96F8)
-I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E4B3C81)
+I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E605995)
 I (.\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x5E4B3C82)
 I (.\Libraries\CMSIS\Include\core_cm4.h)(0x5E4B3C84)
 I (.\Libraries\CMSIS\Include\core_cmInstr.h)(0x5E4B3C84)
@@ -482,7 +482,7 @@ I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5D9B96FA)
 I (.\FreeRTOS\include\FreeRTOS.h)(0x5E4B3C81)
 I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x5D9B96F8)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9B96F8)
-I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E4B3C81)
+I (.\FreeRTOS\include\FreeRTOSConfig.h)(0x5E605995)
 I (.\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x5E4B3C82)
 I (.\Libraries\CMSIS\Include\core_cm4.h)(0x5E4B3C84)
 I (.\Libraries\CMSIS\Include\core_cmInstr.h)(0x5E4B3C84)
