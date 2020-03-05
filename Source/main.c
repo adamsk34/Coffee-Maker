@@ -14,6 +14,7 @@
 
 void vButtonEventGenerator(void *pvParameters);
 void vButtonListener(void *pvParameters);
+void vDPDisableSinglePress(void *pvParameters);
 void vIdle(void *pvParameters);
 void vShowCoffeeSelected(void *pvParameters);
 void vWaitIfSinglePressed(void *pvParameters);
@@ -164,7 +165,6 @@ void vWaitIfSinglePressed(void *pvParameters) {
 	if(!dpDisableSinglePress) {// check if a double press has not happened
 		singlePressButtonEvent();
 	}
-	dpDisableSinglePress = 0;// false
 	
 	vTaskDelete(NULL);
 }
@@ -183,6 +183,15 @@ void vWaitIfLongPressed(void *pvParameters) {
 	vTaskDelete(NULL);
 }
 
+// double press disable single press
+void vDPDisableSinglePress(void *pvParameters) {
+	vTaskDelay(DOUBLE_PRESS_WINDOW);
+	
+	dpDisableSinglePress--;
+	
+	vTaskDelete(NULL);
+}
+
 void vButtonEventGenerator(void *pvParameters) {
 	while(1) {
 		if(pressButtonOccurred) {
@@ -190,9 +199,14 @@ void vButtonEventGenerator(void *pvParameters) {
 			pressButtonEvent();
 			if(ticksLastPress != NULL && ticksLastPress > xTaskGetTickCount() - DOUBLE_PRESS_WINDOW) {
 				doublePressButtonEvent();
-				dpDisableSinglePress = 1;// true
+				dpDisableSinglePress++;
+				
+				xTaskCreate( vDPDisableSinglePress, (const char*)"Double Press (Temporarily) Disables Single Press Task",
+					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 			}
 			ticksLastPress = xTaskGetTickCount();
+			
+			
 			
 			xTaskCreate( vWaitIfLongPressed, (const char*)"Wait If Long Pressed Task",
 					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
