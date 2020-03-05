@@ -9,14 +9,17 @@
 
 #define STACK_SIZE_MIN	128	/* usStackDepth	- the stack size DEFINED IN WORDS.*/
 #define DEBOUNCE_WINDOW 20
+#define DOUBLE_PRESS_WINDOW 500
 
-void vButton(void *pvParameters);
+void vButtonEventGenerator(void *pvParameters);
+void vButtonListener(void *pvParameters);
 void vIdle(void *pvParameters);
 void vShowCoffeeSelected(void *pvParameters);
+void vWaitIfSinglePressed(void *pvParameters);
 
-void singlePressButtonOccurred(void);
-void pressButtonOccurred(void);
-void unpressButtonOccurred(void);
+void singlePressButtonEvent(void);
+void pressButtonEvent(void);
+void unpressButtonEvent(void);
 
 void nextCoffeeType(void);
 void initDebounceTimer(void);
@@ -48,6 +51,13 @@ int currButtonState = buttonUp;// accounts for debounce
 
 int coffeeSelected = mochaCoffee;
 
+int pressButtonOccurred = 0;// false
+int unpressButtonOccurred = 0;// false
+
+int enableSinglePress = 1;// true
+
+TickType_t ticksLastPress = NULL;
+
 GPIO_InitTypeDef GPIO_Initstructure;
 TIM_TimeBaseInitTypeDef timer_InitStructure;
 
@@ -65,13 +75,14 @@ int main(void) {
 	xTaskCreate( vIdle, (const char*)"Idle Task",
 		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 	
-	xTaskCreate( vButton, (const char*)"Button Task",
+	xTaskCreate( vButtonListener, (const char*)"Button Listener Task",
 		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 	
 	xTaskCreate( vShowCoffeeSelected, (const char*)"LEDs Show Selected Coffee Task",
 		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 	
-	initDebounceTimer();
+	xTaskCreate( vButtonEventGenerator, (const char*)"Button Event Generator Task",
+		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 	
 	vTaskStartScheduler();
 }
@@ -86,9 +97,15 @@ void nextCoffeeType() {
 	}
 }
 
+// double press (not single press, not long press)
+// only called once for each double press
+void doublePressButtonEvent() {
+	STM_EVAL_LEDToggle(LED_GREEN);
+}
+
 // single press (not double press, not long press)
 // only called once for each single press
-void singlePressButtonOccurred() {
+void singlePressButtonEvent() {
 	switch(currState) {
 		case cyclingCoffeeTypes:
 			nextCoffeeType();
@@ -98,18 +115,17 @@ void singlePressButtonOccurred() {
 
 // very recently, button pressed down (accounts for debouncing)
 // only called once for each press
-void pressButtonOccurred() {
+void pressButtonEvent() {
 	
 }
 
 // very recently, finger taken off button (accounts for debouncing)
 // only called once for each unpress
-void unpressButtonOccurred() {
-	// TODO: should wait 500ms to make sure not a double press
-	singlePressButtonOccurred();
+void unpressButtonEvent() {
+	
 }
 
-void vButton(void *pvParameters) {
+void vButtonListener(void *pvParameters) {
 	uint8_t button_pin = 0;
 	uint8_t late_button_pin = 0;// what the value of `button_pin` was, last loop iteration
 
@@ -123,6 +139,40 @@ void vButton(void *pvParameters) {
 		} else {// true if the button is not currently being pressed
 			if(late_button_pin) {// true if button_pin JUST turned off
 				initDebounceTimer();
+			}
+		}
+	}
+}
+
+void vWaitIfSinglePressed(void *pvParameters) {
+	
+	vTaskDelay(DOUBLE_PRESS_WINDOW);
+
+	if(enableSinglePress) {// check if a double press has not happened
+		singlePressButtonEvent();
+	}
+	enableSinglePress = 1;// true
+	
+	vTaskDelete(NULL);
+}
+
+void vButtonEventGenerator(void *pvParameters) {
+	while(1) {
+		if(pressButtonOccurred) {
+			pressButtonOccurred = 0;// false
+			pressButtonEvent();
+			if(ticksLastPress != NULL && ticksLastPress > xTaskGetTickCount() - DOUBLE_PRESS_WINDOW) {
+				doublePressButtonEvent();
+				enableSinglePress = 0;// false
+			}
+			ticksLastPress = xTaskGetTickCount();
+		} else if(unpressButtonOccurred) {
+			unpressButtonOccurred = 0;// false
+			unpressButtonEvent();
+			
+			if(enableSinglePress) {
+				xTaskCreate( vWaitIfSinglePressed, (const char*)"Wait If Single Pressed Task",
+					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 			}
 		}
 	}
@@ -149,6 +199,8 @@ void vShowCoffeeSelected(void *pvParameters) {
 void vIdle(void *pvParameters) {
 	while(1);
 }
+
+// ************************************** Timers **************************************
 
 void initDebounceTimer() {
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
@@ -188,7 +240,7 @@ void TIM2_IRQHandler()
 		if(button_pin) {
 			if(currDebounceState == activeDebounce) {
 				if(currButtonState == buttonUp) {// true if finger VERY recently pushed button down
-					pressButtonOccurred();
+					pressButtonOccurred = 1;// true
 				}
 				currDebounceState = doneDebounce;// false
 				currButtonState = buttonDown;
@@ -198,7 +250,7 @@ void TIM2_IRQHandler()
 		} else {
 			if(currDebounceState == activeDebounce) {
 				if(currButtonState == buttonDown) {// true if finger VERY recently taken off button
-					unpressButtonOccurred();
+					unpressButtonOccurred = 1;// true
 				}
 				currDebounceState = doneDebounce;// false
 				currButtonState = buttonUp;
