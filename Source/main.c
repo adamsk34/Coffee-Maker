@@ -150,6 +150,8 @@ void vIdle(void *pvParameters) {
 	while(1);
 }
 
+// ************************************** Timers **************************************
+
 void initDebounceTimer() {
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
       
@@ -209,3 +211,24 @@ void TIM2_IRQHandler()
 		
 	}
 }
+
+
+
+
+
+
+
+
+// TODO: use xTaskGetTickCount
+// https://stackoverflow.com/questions/44696004/freertos-getting-the-current-time
+// Consider using portTICK_RATE_MS
+// 		Example has this code "vTaskDelay( 200 / portTICK_RATE_MS );"
+
+
+
+
+
+
+
+
+
