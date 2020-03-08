@@ -11,6 +11,10 @@
 #define DEBOUNCE_WINDOW 20
 #define DOUBLE_PRESS_WINDOW 500
 #define LONG_PRESS_WINDOW 3000
+#define SERVO_POSITION_NEUTRAL 600
+#define SERVO_POSITION_ESPRESSO 1100
+#define SERVO_POSITION_MILK 1800
+#define SERVO_POSITION_CHOCOLATE_MILK 2200
 
 void vButtonEventGenerator(void *pvParameters);
 void vButtonListener(void *pvParameters);
@@ -19,6 +23,9 @@ void vIdle(void *pvParameters);
 void vShowCoffeeSelected(void *pvParameters);
 void vWaitIfSinglePressed(void *pvParameters);
 void vWaitIfLongPressed(void *pvParameters);
+void vServeEspresso(void *pvParameters);
+void vServeLatte(void *pvParameters);
+void vServeMocha(void *pvParameters);
 
 void doublePressButtonEvent(void);
 void longPressButtonEvent(void);
@@ -87,6 +94,11 @@ int main(void) {
 	
 	STM_EVAL_PBInit(BUTTON_USER, BUTTON_MODE_GPIO);
 	enableDebounceInterrupt();
+  
+	setSysTick();
+	InitServos();
+	InitPWMTimer4();
+	SetupPWM();
 	
 	xTaskCreate( vIdle, (const char*)"Idle Task",
 		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
@@ -218,20 +230,55 @@ void vShowCoffeeSelected(void *pvParameters) {
 }
 
 void vIdle(void *pvParameters) {
-	setSysTick();
-  InitServos();
-  InitPWMTimer4();
-  SetupPWM();
+	while(1);
+}
+
+void vServeEspresso(void *pvParameters) {
 	
-	while(1) {
-		//only control one servo at timer 4, channel 1 
-    TIM4->CCR1 = 600;    // 0.6 ms
-    vTaskDelay(1000);
-    TIM4->CCR1 = 1500; // 1.5 ms
-    vTaskDelay(1000);
-    TIM4->CCR1 = 2200; // 2.2 ms
-    vTaskDelay(1000);
-	}
+	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
+	vTaskDelay(1000);
+	
+	TIM4->CCR1 = SERVO_POSITION_ESPRESSO;// espresso ingredient
+	vTaskDelay(1000);
+	
+	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
+	vTaskDelay(1000);
+	
+	vTaskDelete(NULL);
+}
+
+void vServeLatte (void *pvParameters) {
+	
+	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
+	vTaskDelay(1000);
+	
+	TIM4->CCR1 = SERVO_POSITION_ESPRESSO;
+	vTaskDelay(1000);
+	
+	TIM4->CCR1 = SERVO_POSITION_MILK;
+	vTaskDelay(1000);
+	
+	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
+	vTaskDelay(1000);
+	
+	vTaskDelete(NULL);
+}
+
+void vServeMocha(void *pvParameters) {
+	
+	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
+	vTaskDelay(1000);
+	
+	TIM4->CCR1 = SERVO_POSITION_ESPRESSO;
+	vTaskDelay(1000);
+	
+	TIM4->CCR1 = SERVO_POSITION_CHOCOLATE_MILK;
+	vTaskDelay(1000);
+	
+	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
+	vTaskDelay(1000);
+	
+	vTaskDelete(NULL);
 }
 
 // ************************************** Button Events **************************************
@@ -240,6 +287,23 @@ void vIdle(void *pvParameters) {
 // only called once for each double press
 void doublePressButtonEvent() {
 	
+	if(currState == cyclingCoffeeTypes) {
+		
+		switch(coffeeSelected) {
+			case espressoCoffee:
+				xTaskCreate( vServeEspresso, (const char*)"Serve Espresso Task",
+					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
+				break;
+			case latteCoffee:
+				xTaskCreate( vServeLatte, (const char*)"Serve Latte Task",
+					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
+				break;
+			case mochaCoffee:
+				xTaskCreate( vServeMocha, (const char*)"Serve Mocha Task",
+					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
+				break;
+		}
+	}
 }
 
 // long press (not single press, not double press)
