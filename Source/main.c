@@ -230,7 +230,10 @@ void vShowCoffeeSelected(void *pvParameters) {
 }
 
 void vIdle(void *pvParameters) {
-	while(1);
+	while(1) {
+		vTaskDelay(500);
+		STM_EVAL_LEDToggle(LED_GREEN);
+	}
 }
 
 void vServeEspresso(void *pvParameters) {
@@ -238,7 +241,7 @@ void vServeEspresso(void *pvParameters) {
 	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
 	vTaskDelay(1000);
 	
-	TIM4->CCR1 = SERVO_POSITION_ESPRESSO;// espresso ingredient
+	TIM4->CCR1 = SERVO_POSITION_ESPRESSO;
 	vTaskDelay(1000);
 	
 	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
