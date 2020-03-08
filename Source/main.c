@@ -6,6 +6,7 @@
 #include "queue.h"
 #include "task.h"
 #include "croutine.h"
+#include "codec.h"
 
 #define STACK_SIZE_MIN	128	/* usStackDepth	- the stack size DEFINED IN WORDS.*/
 #define DEBOUNCE_WINDOW 20
@@ -15,6 +16,8 @@
 #define SERVO_POSITION_ESPRESSO 1100
 #define SERVO_POSITION_MILK 1800
 #define SERVO_POSITION_CHOCOLATE_MILK 2200
+#define NOTEFREQUENCY 0.015		//frequency of saw wave: f0 = 0.5 * NOTEFREQUENCY * 48000 (=sample rate)
+#define NOTEAMPLITUDE 500.0		//amplitude of the saw wave
 
 void vButtonEventGenerator(void *pvParameters);
 void vButtonListener(void *pvParameters);
@@ -26,6 +29,7 @@ void vWaitIfLongPressed(void *pvParameters);
 void vServeEspresso(void *pvParameters);
 void vServeLatte(void *pvParameters);
 void vServeMocha(void *pvParameters);
+void vCountDown(void *pvParameters);
 
 void doublePressButtonEvent(void);
 void longPressButtonEvent(void);
@@ -42,8 +46,21 @@ void InitServos (void);
 void InitPWMTimer4(void);
 void SetupPWM(void);
 
+typedef struct {
+		float tabs[8];
+		float params[8];
+		uint8_t currIndex;
+} fir_8;
+int getCoffeeTime(void);
+void playSound(void);
+float updateFilter(fir_8* theFilter, float newValue);
+void initFilter(fir_8* theFilter);
+
 enum states {
-	cyclingCoffeeTypes
+	cyclingCoffeeTypes,
+	countDown,//blinking led(per second one blinking) to count time of making coffee,
+						//when coffee making done, machine will sound beeps.
+	programming//to program time
 };
 int currState = cyclingCoffeeTypes;
 
@@ -84,6 +101,19 @@ TickType_t ticksLastUnpress = NULL;
 GPIO_InitTypeDef GPIO_Initstructure;
 TIM_TimeBaseInitTypeDef timer_InitStructure;
 
+int espressoTime = 5;
+int milkTime = 5;
+int chocoMilkTime = 6;
+
+//====gobal value for sound function================
+GPIO_InitTypeDef GPIO_InitStructure;
+volatile uint32_t sampleCounter = 0;
+volatile int16_t sample = 0;
+double sawWave = 0.0;
+float filteredSaw = 0.0;
+fir_8 filt;
+//===================================================
+
 int main(void) {
 	NVIC_PriorityGroupConfig( NVIC_PriorityGroup_4 );
 	
@@ -100,6 +130,15 @@ int main(void) {
 	InitPWMTimer4();
 	SetupPWM();
 	
+	//for test-----------------------
+	currState = countDown;
+	//coffeeSelected = espressoCoffee;
+	coffeeSelected = latteCoffee;
+	//----------------------------------------
+	
+	xTaskCreate(vCountDown, (const char*)"Countdown Task",
+		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL);
+	/*
 	xTaskCreate( vIdle, (const char*)"Idle Task",
 		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 	
@@ -111,7 +150,7 @@ int main(void) {
 	
 	xTaskCreate( vButtonEventGenerator, (const char*)"Button Event Generator Task",
 		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
-	
+	*/
 	vTaskStartScheduler();
 }
 
@@ -452,3 +491,146 @@ void TIM2_IRQHandler()
 		
 	}
 }
+
+//*************************CountDown Timer**************************************
+int timeCounter = 0;
+int i = 0;
+void vCountDown(void *pvParameters)
+{
+	for(;;)
+	{
+		if(currState == countDown){
+			timeCounter = getCoffeeTime() *2;//get times to blinking
+			for(i = 0; i < timeCounter; i++){
+				STM_EVAL_LEDToggle(LED_BLUE);
+				vTaskDelay( 1000 / portTICK_RATE_MS );
+			}
+			playSound();
+			currState = cyclingCoffeeTypes;
+		}
+	}
+}
+
+int getCoffeeTime(void){
+	int result = 0;
+	if(coffeeSelected == mochaCoffee){
+			result = espressoTime + chocoMilkTime;
+	}
+	else if(coffeeSelected == latteCoffee){
+			result = espressoTime + milkTime;
+	}
+	else if(coffeeSelected == espressoCoffee){
+			result = espressoTime;
+	}
+	else{
+			result = -1;
+	}
+	return result;
+}
+
+//*************************Sound************************************************
+
+
+void playSound(void){
+		int beep = 0;
+		int wait = 0;
+		int beepTimes = 6;
+		int frequence = 0;
+		int interval = 2000000;
+	
+		if(coffeeSelected == mochaCoffee){
+			frequence = 11;
+			beepTimes = 5;
+		}
+		else if(coffeeSelected == espressoCoffee){
+			frequence = 1;
+			beepTimes = 7;
+		}
+		else if(coffeeSelected == latteCoffee){
+			frequence = 6;
+			beepTimes = 6;
+		}
+		while(beepTimes >0){
+				SystemInit();
+				//enables GPIO clock for PortD
+				RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
+
+				beep = 0;
+				codec_init();
+				codec_ctrl_init();
+				I2S_Cmd(CODEC_I2S, ENABLE);
+				initFilter(&filt);
+				while(beep != interval)
+				{
+			
+						if (SPI_I2S_GetFlagStatus(CODEC_I2S, SPI_I2S_FLAG_TXE))
+						{
+								SPI_I2S_SendData(CODEC_I2S, sample);
+
+								//only update on every second sample to insure that L & R ch. have the same sample value
+								if (sampleCounter & 0x00000001)
+								{
+										sawWave += NOTEFREQUENCY;
+										if (sawWave > 1.0)
+												sawWave -= 2.0;
+
+										filteredSaw = updateFilter(&filt, sawWave);
+										sample = (int16_t)(NOTEAMPLITUDE*filteredSaw);
+								}
+								sampleCounter++;
+						}
+						beep++;
+				}
+				stop();
+				beepTimes --;
+				wait = frequence * interval;
+				while(wait > 0){
+					wait --;
+				}
+		}
+}
+
+// a very crude FIR lowpass filter
+float updateFilter(fir_8* filt, float val)
+{
+		uint16_t valIndex;
+		uint16_t paramIndex;
+		float outval = 0.0;
+
+		valIndex = filt->currIndex;
+		filt->tabs[valIndex] = val;
+
+		for (paramIndex=0; paramIndex<8; paramIndex++)
+		{
+				outval += (filt->params[paramIndex]) * (filt->tabs[(valIndex+paramIndex)&0x07]);
+		}
+
+		valIndex++;
+		valIndex &= 0x07;
+
+		filt->currIndex = valIndex;
+
+		return outval;
+}
+
+void initFilter(fir_8* theFilter)
+{
+		uint8_t i;
+
+		theFilter->currIndex = 0;
+
+		for (i=0; i<8; i++)
+				theFilter->tabs[i] = 0.0;
+
+		theFilter->params[0] = 0.01;
+		theFilter->params[1] = 0.05;
+		theFilter->params[2] = 0.12;
+		theFilter->params[3] = 0.32;
+		theFilter->params[4] = 0.32;
+		theFilter->params[5] = 0.12;
+		theFilter->params[6] = 0.05;
+		theFilter->params[7] = 0.01;
+}
+
+
+
