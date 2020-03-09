@@ -1,0 +1,16 @@
+Investigation
+
+i. Pre-emptive vs. Cooperative
+In the file FreeRTOS/include/FreeRTOSConfig.h the following line determines whether the system uses pre-emption
+#define configUSE_PREEMPTION 1
+
+ii. With time slicing vs. without time slicing
+In the file FreeRTOS/include/FreeRTOSConfig.h the following line determines whether the system uses time slicing
+#define configUSE_TIME_SLICING 1OB
+
+iii. Processor clock 168MHz vs. 100MHz
+In the file Startup/system_stm32f4xx.c the following line determines the processor clock
+uint32_t SystemCoreClock = 168000000;
+
+
+
