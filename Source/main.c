@@ -16,8 +16,8 @@
 #define SERVO_POSITION_ESPRESSO 1100
 #define SERVO_POSITION_MILK 1800
 #define SERVO_POSITION_CHOCOLATE_MILK 2200
-#define NOTEFREQUENCY 0.015		//frequency of saw wave: f0 = 0.5 * NOTEFREQUENCY * 48000 (=sample rate)
-#define NOTEAMPLITUDE 500.0		//amplitude of the saw wave
+double  NOTEFREQUENCY = 0.015;	
+double NOTEAMPLITUDE = 500.0;		
 
 void vButtonEventGenerator(void *pvParameters);
 void vButtonListener(void *pvParameters);
@@ -30,6 +30,9 @@ void vServeEspresso(void *pvParameters);
 void vServeLatte(void *pvParameters);
 void vServeMocha(void *pvParameters);
 void vCountDown(void *pvParameters);
+void vCountDownEspresso(void *pvParameters);
+void vCountDownLatte(void *pvParameters);
+void vCountDownMocha(void *pvParameters);
 
 void doublePressButtonEvent(void);
 void longPressButtonEvent(void);
@@ -51,15 +54,17 @@ typedef struct {
 		float params[8];
 		uint8_t currIndex;
 } fir_8;
+
 int getCoffeeTime(void);
-void playSound(void);
+void playSound(int);
 float updateFilter(fir_8* theFilter, float newValue);
 void initFilter(fir_8* theFilter);
+void changeCoffeeTime(void);// increase time of selected coffee type by 1
+void resetCoffeeTime(void); //change time of selected coffee type to be 0 
 
 enum states {
 	cyclingCoffeeTypes,
-	countDown,//blinking led(per second one blinking) to count time of making coffee,
-						//when coffee making done, machine will sound beeps.
+	countDown,
 	programming//to program time
 };
 int currState = cyclingCoffeeTypes;
@@ -105,6 +110,8 @@ int espressoTime = 5;
 int milkTime = 5;
 int chocoMilkTime = 6;
 
+//int countDown = 0;//false; It is 1(true) if start to count down
+
 //====gobal value for sound function================
 GPIO_InitTypeDef GPIO_InitStructure;
 volatile uint32_t sampleCounter = 0;
@@ -130,15 +137,9 @@ int main(void) {
 	InitPWMTimer4();
 	SetupPWM();
 	
-	//for test-----------------------
-	currState = countDown;
-	//coffeeSelected = espressoCoffee;
-	coffeeSelected = latteCoffee;
-	//----------------------------------------
+	//xTaskCreate(vCountDown, (const char*)"Countdown Task",
+		//STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL);
 	
-	xTaskCreate(vCountDown, (const char*)"Countdown Task",
-		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL);
-	/*
 	xTaskCreate( vIdle, (const char*)"Idle Task",
 		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 	
@@ -150,7 +151,7 @@ int main(void) {
 	
 	xTaskCreate( vButtonEventGenerator, (const char*)"Button Event Generator Task",
 		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
-	*/
+	
 	vTaskStartScheduler();
 }
 
@@ -252,19 +253,23 @@ void vButtonEventGenerator(void *pvParameters) {
 
 void vShowCoffeeSelected(void *pvParameters) {
 	while(1) {
-		if(coffeeSelected == mochaCoffee) {
+		if(currState ==cyclingCoffeeTypes &&coffeeSelected == mochaCoffee) {
 			STM_EVAL_LEDOff(LED_BLUE);
 			STM_EVAL_LEDOn(LED_ORANGE);// orange on
 			STM_EVAL_LEDOff(LED_RED);
-		} else if(coffeeSelected == espressoCoffee) {
+		} else if(currState == cyclingCoffeeTypes && coffeeSelected == espressoCoffee) {
 			STM_EVAL_LEDOff(LED_BLUE);
 			STM_EVAL_LEDOff(LED_ORANGE);
 			STM_EVAL_LEDOn(LED_RED); // red on
-		} else if(coffeeSelected == latteCoffee) {
+		} else if(currState == cyclingCoffeeTypes && coffeeSelected == latteCoffee) {
 			STM_EVAL_LEDOn(LED_BLUE);// blue on
 			STM_EVAL_LEDOff(LED_ORANGE);
 			STM_EVAL_LEDOff(LED_RED);
 		}
+		else{
+			continue;
+		}
+		
 	}
 }
 
@@ -330,18 +335,24 @@ void vServeMocha(void *pvParameters) {
 void doublePressButtonEvent() {
 	
 	if(currState == cyclingCoffeeTypes) {
-		
+		currState = countDown;
 		switch(coffeeSelected) {
 			case espressoCoffee:
 				xTaskCreate( vServeEspresso, (const char*)"Serve Espresso Task",
+					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
+				xTaskCreate( vCountDownEspresso, (const char*)"CountDown Espresso Task",
 					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 				break;
 			case latteCoffee:
 				xTaskCreate( vServeLatte, (const char*)"Serve Latte Task",
 					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
+				xTaskCreate( vCountDownLatte, (const char*)"CountDown Latte Task",
+					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 				break;
 			case mochaCoffee:
 				xTaskCreate( vServeMocha, (const char*)"Serve Mocha Task",
+					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
+				xTaskCreate( vCountDownMocha, (const char*)"CountDown Task",
 					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 				break;
 		}
@@ -351,7 +362,12 @@ void doublePressButtonEvent() {
 // long press (not single press, not double press)
 // only called once for each long press
 void longPressButtonEvent() {
-	
+	if(currState == programming){
+		currState = cyclingCoffeeTypes;
+	}
+	else{
+		currState = programming;
+	}
 }
 
 // single press (not double press, not long press)
@@ -361,6 +377,11 @@ void singlePressButtonEvent() {
 		case cyclingCoffeeTypes:
 			nextCoffeeType();
 			break;
+		case programming:
+			changeCoffeeTime();
+			break;
+		case countDown:
+			currState = cyclingCoffeeTypes;
 	}
 }
 
@@ -368,7 +389,7 @@ void singlePressButtonEvent() {
 // this event can be a part of a single, double, or long press
 // only called once for each press
 void pressButtonEvent() {
-	
+
 }
 
 // very recently, finger taken off button (accounts for debouncing
@@ -492,6 +513,33 @@ void TIM2_IRQHandler()
 	}
 }
 
+void changeCoffeeTime(){
+	if(coffeeSelected == latteCoffee){
+		milkTime ++;
+	}
+	else if(coffeeSelected == espressoCoffee){
+		espressoTime ++;
+	}
+	else if(coffeeSelected == mochaCoffee){
+		chocoMilkTime ++;
+	}
+}
+
+void resetCoffeeTime(){
+	if(coffeeSelected == latteCoffee){
+		milkTime = 0;
+	}
+	else if(coffeeSelected == espressoCoffee){
+		espressoTime = 0;
+	}
+	else if(coffeeSelected == mochaCoffee){
+		chocoMilkTime = 0;
+	}
+}
+
+
+
+
 //*************************CountDown Timer**************************************
 int timeCounter = 0;
 int i = 0;
@@ -499,17 +547,64 @@ void vCountDown(void *pvParameters)
 {
 	for(;;)
 	{
-		if(currState == countDown){
+		if(currState){
+			int typeToMake = coffeeSelected;
 			timeCounter = getCoffeeTime() *2;//get times to blinking
 			for(i = 0; i < timeCounter; i++){
-				STM_EVAL_LEDToggle(LED_BLUE);
+				if(typeToMake == latteCoffee){
+					STM_EVAL_LEDToggle(LED_BLUE);
+				}
+				else if(typeToMake == mochaCoffee){
+					STM_EVAL_LEDToggle(LED_ORANGE);
+				}
+				else if(typeToMake == espressoCoffee){
+					STM_EVAL_LEDToggle(LED_RED);
+				}
 				vTaskDelay( 1000 / portTICK_RATE_MS );
 			}
-			playSound();
+			playSound(coffeeSelected);
 			currState = cyclingCoffeeTypes;
 		}
 	}
 }
+
+
+void vCountDownLatte(void* pvParameters){
+	int i = 0; 
+	int timeRequired = getCoffeeTime()*2;
+	for(i = 0; i< timeRequired; i++){
+		STM_EVAL_LEDToggle(LED_BLUE);
+		vTaskDelay(1000/portTICK_RATE_MS);
+	}
+	playSound(coffeeSelected);
+	currState = cyclingCoffeeTypes;
+	vTaskDelete(NULL);
+}
+
+void vCountDownMocha(void* pvParameters){
+	int i = 0; 
+	int timeRequired = getCoffeeTime()*2;
+	for(i = 0; i< timeRequired; i++){
+		STM_EVAL_LEDToggle(LED_ORANGE);
+		vTaskDelay(1000/portTICK_RATE_MS);
+	}
+	playSound(coffeeSelected);
+	currState =cyclingCoffeeTypes;
+	vTaskDelete(NULL);
+}
+
+void vCountDownEspresso(void* pvParameters){
+	int i = 0; 
+	int timeRequired = getCoffeeTime()*2;
+	for(i = 0; i< timeRequired; i++){
+		STM_EVAL_LEDToggle(LED_RED);
+		vTaskDelay(1000/portTICK_RATE_MS);
+	}
+	playSound(coffeeSelected);
+	currState = cyclingCoffeeTypes;
+	vTaskDelete(NULL);
+}
+
 
 int getCoffeeTime(void){
 	int result = 0;
@@ -529,32 +624,31 @@ int getCoffeeTime(void){
 }
 
 //*************************Sound************************************************
-
-
-void playSound(void){
+//5 beeps for mocha
+//7 beeps for espresso
+//6 beeps for lattee
+void playSound(int coffeeType){
 		int beep = 0;
 		int wait = 0;
 		int beepTimes = 6;
 		int frequence = 0;
 		int interval = 2000000;
 	
-		if(coffeeSelected == mochaCoffee){
-			frequence = 11;
+		if(coffeeType == mochaCoffee){
+			NOTEFREQUENCY = 0.015*5;
 			beepTimes = 5;
 		}
-		else if(coffeeSelected == espressoCoffee){
-			frequence = 1;
+		else if(coffeeType == espressoCoffee){
+			NOTEFREQUENCY = 0.015 * 10;
 			beepTimes = 7;
 		}
-		else if(coffeeSelected == latteCoffee){
-			frequence = 6;
+		else if(coffeeType == latteCoffee){
+			NOTEFREQUENCY = 0.015;
 			beepTimes = 6;
 		}
 		while(beepTimes >0){
 				SystemInit();
-				//enables GPIO clock for PortD
 				RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-
 				beep = 0;
 				codec_init();
 				codec_ctrl_init();
@@ -562,12 +656,9 @@ void playSound(void){
 				initFilter(&filt);
 				while(beep != interval)
 				{
-			
 						if (SPI_I2S_GetFlagStatus(CODEC_I2S, SPI_I2S_FLAG_TXE))
 						{
 								SPI_I2S_SendData(CODEC_I2S, sample);
-
-								//only update on every second sample to insure that L & R ch. have the same sample value
 								if (sampleCounter & 0x00000001)
 								{
 										sawWave += NOTEFREQUENCY;
@@ -607,9 +698,7 @@ float updateFilter(fir_8* filt, float val)
 
 		valIndex++;
 		valIndex &= 0x07;
-
 		filt->currIndex = valIndex;
-
 		return outval;
 }
 
