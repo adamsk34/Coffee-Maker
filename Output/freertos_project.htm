@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Output\freertos_project.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Output\freertos_project.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Thu Mar 12 14:06:36 2020
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Thu Mar 12 14:59:14 2020
 <BR><P>
 <H3>Maximum Stack Usage =        232 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -121,17 +121,17 @@ Function Pointers
  <LI><a href="#[60]">prvIdleTask</a> from tasks.o(.text) referenced from tasks.o(.text)
  <LI><a href="#[62]">prvTaskExitError</a> from port.o(.text) referenced from port.o(.text)
  <LI><a href="#[61]">prvTimerTask</a> from timers.o(.text) referenced from timers.o(.text)
- <LI><a href="#[9a]">vButtonEventGenerator</a> from main.o(.text) referenced from main.o(.text)
+ <LI><a href="#[9b]">vButtonEventGenerator</a> from main.o(.text) referenced from main.o(.text)
  <LI><a href="#[a6]">vButtonListener</a> from main.o(.text) referenced from main.o(.text)
- <LI><a href="#[96]">vCountDownEspresso</a> from main.o(.text) referenced from main.o(.text)
- <LI><a href="#[94]">vCountDownLatte</a> from main.o(.text) referenced from main.o(.text)
+ <LI><a href="#[97]">vCountDownEspresso</a> from main.o(.text) referenced from main.o(.text)
+ <LI><a href="#[95]">vCountDownLatte</a> from main.o(.text) referenced from main.o(.text)
  <LI><a href="#[90]">vCountDownMocha</a> from main.o(.text) referenced from main.o(.text)
  <LI><a href="#[7e]">vDPDisableSinglePress</a> from main.o(.text) referenced from main.o(.text)
  <LI><a href="#[a8]">vIdle</a> from main.o(.text) referenced from main.o(.text)
- <LI><a href="#[97]">vServeEspresso</a> from main.o(.text) referenced from main.o(.text)
- <LI><a href="#[95]">vServeLatte</a> from main.o(.text) referenced from main.o(.text)
- <LI><a href="#[93]">vServeMocha</a> from main.o(.text) referenced from main.o(.text)
- <LI><a href="#[9e]">vShowCoffeeSelected</a> from main.o(.text) referenced from main.o(.text)
+ <LI><a href="#[98]">vServeEspresso</a> from main.o(.text) referenced from main.o(.text)
+ <LI><a href="#[96]">vServeLatte</a> from main.o(.text) referenced from main.o(.text)
+ <LI><a href="#[94]">vServeMocha</a> from main.o(.text) referenced from main.o(.text)
+ <LI><a href="#[9f]">vShowCoffeeSelected</a> from main.o(.text) referenced from main.o(.text)
  <LI><a href="#[7c]">vWaitIfLongPressed</a> from main.o(.text) referenced from main.o(.text)
  <LI><a href="#[79]">vWaitIfSinglePressed</a> from main.o(.text) referenced from main.o(.text)
 </UL>
@@ -337,7 +337,7 @@ Global Symbols
 <LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskPlaceOnUnorderedEventList
 <LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
 <LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
-<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
 <LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskStartScheduler
 <LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelete
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
@@ -650,8 +650,8 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text)
 </UL>
-<P><STRONG><a name="[9d]"></a>unpressButtonEvent</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, main.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vButtonEventGenerator
+<P><STRONG><a name="[9e]"></a>unpressButtonEvent</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, main.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vButtonEventGenerator
 </UL>
 
 <P><STRONG><a name="[7d]"></a>longPressButtonEvent</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, main.o(.text))
@@ -705,30 +705,31 @@ Global Symbols
 <LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 </UL>
 <BR>[Called By]<UL><LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDown
-<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownEspresso
-<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownLatte
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownEspresso
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownLatte
 <LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownMocha
 </UL>
 
 <P><STRONG><a name="[91]"></a>getCoffeeTime</STRONG> (Thumb, 60 bytes, Stack size 0 bytes, main.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDown
-<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownEspresso
-<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownLatte
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownEspresso
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownLatte
 <LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownMocha
 </UL>
 
-<P><STRONG><a name="[90]"></a>vCountDownMocha</STRONG> (Thumb, 56 bytes, Stack size 16 bytes, main.o(.text))
+<P><STRONG><a name="[90]"></a>vCountDownMocha</STRONG> (Thumb, 86 bytes, Stack size 16 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 148<LI>Call Chain = vCountDownMocha &rArr; playSound &rArr; codec_init &rArr; I2C_Init &rArr; RCC_GetClocksFreq
 </UL>
 <BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelete
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
 <LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;STM_EVAL_LEDToggle
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;STM_EVAL_LEDOff
 <LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;getCoffeeTime
 <LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;playSound
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text)
 </UL>
-<P><STRONG><a name="[93]"></a>vServeMocha</STRONG> (Thumb, 214 bytes, Stack size 8 bytes, main.o(.text))
+<P><STRONG><a name="[94]"></a>vServeMocha</STRONG> (Thumb, 220 bytes, Stack size 8 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = vServeMocha &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelete
@@ -736,18 +737,19 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text)
 </UL>
-<P><STRONG><a name="[94]"></a>vCountDownLatte</STRONG> (Thumb, 56 bytes, Stack size 16 bytes, main.o(.text))
+<P><STRONG><a name="[95]"></a>vCountDownLatte</STRONG> (Thumb, 86 bytes, Stack size 16 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 148<LI>Call Chain = vCountDownLatte &rArr; playSound &rArr; codec_init &rArr; I2C_Init &rArr; RCC_GetClocksFreq
 </UL>
 <BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelete
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
 <LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;STM_EVAL_LEDToggle
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;STM_EVAL_LEDOff
 <LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;getCoffeeTime
 <LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;playSound
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text)
 </UL>
-<P><STRONG><a name="[95]"></a>vServeLatte</STRONG> (Thumb, 76 bytes, Stack size 8 bytes, main.o(.text))
+<P><STRONG><a name="[96]"></a>vServeLatte</STRONG> (Thumb, 76 bytes, Stack size 8 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = vServeLatte &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelete
@@ -755,18 +757,19 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text)
 </UL>
-<P><STRONG><a name="[96]"></a>vCountDownEspresso</STRONG> (Thumb, 56 bytes, Stack size 16 bytes, main.o(.text))
+<P><STRONG><a name="[97]"></a>vCountDownEspresso</STRONG> (Thumb, 86 bytes, Stack size 16 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 148<LI>Call Chain = vCountDownEspresso &rArr; playSound &rArr; codec_init &rArr; I2C_Init &rArr; RCC_GetClocksFreq
 </UL>
 <BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelete
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
 <LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;STM_EVAL_LEDToggle
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;STM_EVAL_LEDOff
 <LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;getCoffeeTime
 <LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;playSound
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text)
 </UL>
-<P><STRONG><a name="[97]"></a>vServeEspresso</STRONG> (Thumb, 60 bytes, Stack size 8 bytes, main.o(.text))
+<P><STRONG><a name="[98]"></a>vServeEspresso</STRONG> (Thumb, 60 bytes, Stack size 8 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = vServeEspresso &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelete
@@ -774,34 +777,34 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text)
 </UL>
-<P><STRONG><a name="[98]"></a>doublePressButtonEvent</STRONG> (Thumb, 188 bytes, Stack size 24 bytes, main.o(.text))
+<P><STRONG><a name="[99]"></a>doublePressButtonEvent</STRONG> (Thumb, 198 bytes, Stack size 24 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 160 + Unknown Stack Size
 <LI>Call Chain = doublePressButtonEvent &rArr; xTaskGenericCreate &rArr; prvAllocateTCBAndStack &rArr; pvPortMalloc &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
-<BR>[Calls]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
+<BR>[Calls]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
 </UL>
-<BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vButtonEventGenerator
-</UL>
-
-<P><STRONG><a name="[9b]"></a>pressButtonEvent</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, main.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vButtonEventGenerator
+<BR>[Called By]<UL><LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vButtonEventGenerator
 </UL>
 
-<P><STRONG><a name="[9a]"></a>vButtonEventGenerator</STRONG> (Thumb, 184 bytes, Stack size 24 bytes, main.o(.text))
+<P><STRONG><a name="[9c]"></a>pressButtonEvent</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, main.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vButtonEventGenerator
+</UL>
+
+<P><STRONG><a name="[9b]"></a>vButtonEventGenerator</STRONG> (Thumb, 184 bytes, Stack size 24 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 184 + Unknown Stack Size
 <LI>Call Chain = vButtonEventGenerator &rArr; doublePressButtonEvent &rArr; xTaskGenericCreate &rArr; prvAllocateTCBAndStack &rArr; pvPortMalloc &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
-<BR>[Calls]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetTickCount
-<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
-<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pressButtonEvent
-<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;doublePressButtonEvent
-<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;unpressButtonEvent
+<BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetTickCount
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
+<LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pressButtonEvent
+<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;doublePressButtonEvent
+<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;unpressButtonEvent
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text)
 </UL>
-<P><STRONG><a name="[9e]"></a>vShowCoffeeSelected</STRONG> (Thumb, 106 bytes, Stack size 0 bytes, main.o(.text))
+<P><STRONG><a name="[9f]"></a>vShowCoffeeSelected</STRONG> (Thumb, 106 bytes, Stack size 0 bytes, main.o(.text))
 <BR><BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;STM_EVAL_LEDOn
-<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;STM_EVAL_LEDOff
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;STM_EVAL_LEDOff
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text)
 </UL>
@@ -832,7 +835,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text)
 </UL>
-<P><STRONG><a name="[a9]"></a>SetupPWM</STRONG> (Thumb, 78 bytes, Stack size 24 bytes, main.o(.text))
+<P><STRONG><a name="[a9]"></a>SetupPWM</STRONG> (Thumb, 366 bytes, Stack size 24 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = SetupPWM &rArr; TIM_OC2Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM_OC2PreloadConfig
@@ -844,7 +847,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[af]"></a>InitPWMTimer4</STRONG> (Thumb, 58 bytes, Stack size 16 bytes, main.o(.text))
+<P><STRONG><a name="[af]"></a>InitPWMTimer4</STRONG> (Thumb, 54 bytes, Stack size 16 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = InitPWMTimer4
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM_TimeBaseInit
@@ -854,7 +857,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[b0]"></a>InitServos</STRONG> (Thumb, 356 bytes, Stack size 16 bytes, main.o(.text))
+<P><STRONG><a name="[b0]"></a>InitServos</STRONG> (Thumb, 68 bytes, Stack size 16 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = InitServos &rArr; GPIO_PinAFConfig
 </UL>
 <BR>[Calls]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_AHB1PeriphClockCmd
@@ -882,7 +885,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 208 + Unknown Stack Size
 <LI>Call Chain = main &rArr; vTaskStartScheduler &rArr; xTimerCreateTimerTask &rArr; xTaskGenericCreate &rArr; prvAllocateTCBAndStack &rArr; pvPortMalloc &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
-<BR>[Calls]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
+<BR>[Calls]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
 <LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskStartScheduler
 <LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;STM_EVAL_PBInit
 <LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;STM_EVAL_LEDInit
@@ -924,18 +927,21 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[a0]"></a>STM_EVAL_LEDOn</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, discoveryf4utils.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vShowCoffeeSelected
+<BR><BR>[Called By]<UL><LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vShowCoffeeSelected
 </UL>
 
-<P><STRONG><a name="[9f]"></a>STM_EVAL_LEDOff</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, discoveryf4utils.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vShowCoffeeSelected
+<P><STRONG><a name="[93]"></a>STM_EVAL_LEDOff</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, discoveryf4utils.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vShowCoffeeSelected
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownEspresso
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownLatte
+<LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownMocha
 </UL>
 
 <P><STRONG><a name="[92]"></a>STM_EVAL_LEDToggle</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, discoveryf4utils.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDown
 <LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vIdle
-<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownEspresso
-<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownLatte
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownEspresso
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownLatte
 <LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownMocha
 </UL>
 
@@ -1074,7 +1080,7 @@ Global Symbols
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
 <LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskRemoveFromUnorderedEventList
 <LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskPlaceOnUnorderedEventList
-<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
 <LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelete
 </UL>
 
@@ -1288,7 +1294,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvProcessTimerOrBlockTask
 </UL>
 
-<P><STRONG><a name="[99]"></a>xTaskGenericCreate</STRONG> (Thumb, 288 bytes, Stack size 56 bytes, tasks.o(.text))
+<P><STRONG><a name="[9a]"></a>xTaskGenericCreate</STRONG> (Thumb, 288 bytes, Stack size 56 bytes, tasks.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 136 + Unknown Stack Size
 <LI>Call Chain = xTaskGenericCreate &rArr; prvAllocateTCBAndStack &rArr; pvPortMalloc &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
@@ -1305,8 +1311,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[11b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTimerCreateTimerTask
 <LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskStartScheduler
 <LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vButtonEventGenerator
-<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;doublePressButtonEvent
+<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vButtonEventGenerator
+<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;doublePressButtonEvent
 </UL>
 
 <P><STRONG><a name="[7b]"></a>vTaskDelete</STRONG> (Thumb, 160 bytes, Stack size 16 bytes, tasks.o(.text))
@@ -1320,11 +1326,11 @@ Global Symbols
 <LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uxListRemove
 <LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ulPortSetInterruptMask
 </UL>
-<BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vServeEspresso
-<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownEspresso
-<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vServeLatte
-<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownLatte
-<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vServeMocha
+<BR>[Called By]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vServeEspresso
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownEspresso
+<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vServeLatte
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownLatte
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vServeMocha
 <LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownMocha
 <LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vDPDisableSinglePress
 <LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vWaitIfLongPressed
@@ -1398,11 +1404,11 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDown
 <LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vIdle
-<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vServeEspresso
-<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownEspresso
-<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vServeLatte
-<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownLatte
-<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vServeMocha
+<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vServeEspresso
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownEspresso
+<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vServeLatte
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownLatte
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vServeMocha
 <LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCountDownMocha
 <LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vDPDisableSinglePress
 <LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vWaitIfLongPressed
@@ -1469,7 +1475,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[11b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTimerCreateTimerTask
 <LI><a href="#[11c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xPortStartScheduler
 <LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ulPortSetInterruptMask
-<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -1479,14 +1485,14 @@ Global Symbols
 <LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ulPortSetInterruptMask
 </UL>
 
-<P><STRONG><a name="[9c]"></a>xTaskGetTickCount</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, tasks.o(.text))
+<P><STRONG><a name="[9d]"></a>xTaskGetTickCount</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, tasks.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = xTaskGetTickCount &rArr; vPortExitCritical
 </UL>
 <BR>[Calls]<UL><LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
 <LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
 </UL>
 <BR>[Called By]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvSampleTimeNow
-<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vButtonEventGenerator
+<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vButtonEventGenerator
 </UL>
 
 <P><STRONG><a name="[11f]"></a>xTaskGetTickCountFromISR</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, tasks.o(.text), UNUSED)
@@ -1639,7 +1645,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCheckForValidListAndQueue
 <LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ulPortSetInterruptMask
-<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
 </UL>
 <BR>[Called By]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskStartScheduler
 </UL>
@@ -1661,7 +1667,7 @@ Global Symbols
 <P><STRONG><a name="[196]"></a>pvTimerGetTimerID</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, timers.o(.text), UNUSED)
 
 <P><STRONG><a name="[10b]"></a>pxPortInitialiseStack</STRONG> (Thumb, 34 bytes, Stack size 0 bytes, port.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
+<BR><BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
 </UL>
 
 <P><STRONG><a name="[131]"></a>vPortSetupTimerInterrupt</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, port.o(.text))
@@ -1695,7 +1701,7 @@ Global Symbols
 <LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 <LI><a href="#[d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericReset
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
-<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
 <LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelete
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
 </UL>
@@ -1723,8 +1729,8 @@ Global Symbols
 <LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvIsQueueFull
 <LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvUnlockQueue
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
-<LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetTickCount
-<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
+<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetTickCount
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
 <LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelete
 </UL>
 
@@ -1752,8 +1758,8 @@ Global Symbols
 <LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvIsQueueFull
 <LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvUnlockQueue
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
-<LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetTickCount
-<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
+<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetTickCount
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
 <LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelete
 </UL>
 
@@ -2828,7 +2834,7 @@ Local Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInitialise
 </UL>
-<BR>[Called By]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
+<BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
 </UL>
 
 <P><STRONG><a name="[107]"></a>prvInitialiseTCBVariables</STRONG> (Thumb, 90 bytes, Stack size 32 bytes, tasks.o(.text))
@@ -2836,7 +2842,7 @@ Local Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInitialiseItem
 </UL>
-<BR>[Called By]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
+<BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
 </UL>
 
 <P><STRONG><a name="[109]"></a>prvAllocateTCBAndStack</STRONG> (Thumb, 58 bytes, Stack size 16 bytes, tasks.o(.text))
@@ -2847,7 +2853,7 @@ Local Symbols
 <LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pvPortMalloc
 <LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memset
 </UL>
-<BR>[Called By]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
+<BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
 </UL>
 
 <P><STRONG><a name="[10e]"></a>prvResetNextTaskUnblockTime</STRONG> (Thumb, 42 bytes, Stack size 0 bytes, tasks.o(.text))
@@ -2938,7 +2944,7 @@ Local Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 184<LI>Call Chain = prvSampleTimeNow &rArr; prvSwitchTimerLists &rArr; xTimerGenericCommand &rArr; xQueueGenericSend &rArr; prvCopyDataToQueue &rArr; xTaskPriorityDisinherit
 </UL>
 <BR>[Calls]<UL><LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvSwitchTimerLists
-<LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetTickCount
+<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetTickCount
 </UL>
 <BR>[Called By]<UL><LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvProcessTimerOrBlockTask
 <LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvProcessReceivedCommands

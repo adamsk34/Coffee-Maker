@@ -98,6 +98,8 @@ int dpDisableSinglePress = 0;// false
 // long press disable single press
 int lpDisableSinglePress = 0;// false
 
+int numCoffeesRunning = 0;
+
 //volatile uint32_t msTicks;// Counts 1ms timeTicks
 
 TickType_t ticksLastPress = NULL;
@@ -336,6 +338,7 @@ void doublePressButtonEvent() {
 	
 	if(currState == cyclingCoffeeTypes) {
 		currState = countDown;
+		numCoffeesRunning++;
 		switch(coffeeSelected) {
 			case espressoCoffee:
 				xTaskCreate( vServeEspresso, (const char*)"Serve Espresso Task",
@@ -573,11 +576,17 @@ void vCountDownLatte(void* pvParameters){
 	int i = 0; 
 	int timeRequired = getCoffeeTime()*2;
 	for(i = 0; i< timeRequired; i++){
-		STM_EVAL_LEDToggle(LED_BLUE);
+		if(currState != cyclingCoffeeTypes) {
+			STM_EVAL_LEDToggle(LED_BLUE);
+		}
 		vTaskDelay(1000/portTICK_RATE_MS);
 	}
+	STM_EVAL_LEDOff(LED_BLUE);
 	playSound(coffeeSelected);
-	currState = cyclingCoffeeTypes;
+	numCoffeesRunning--;
+	if(numCoffeesRunning == 0) {
+		currState = cyclingCoffeeTypes;
+	}
 	vTaskDelete(NULL);
 }
 
@@ -585,11 +594,17 @@ void vCountDownMocha(void* pvParameters){
 	int i = 0; 
 	int timeRequired = getCoffeeTime()*2;
 	for(i = 0; i< timeRequired; i++){
-		STM_EVAL_LEDToggle(LED_ORANGE);
+		if(currState != cyclingCoffeeTypes) {
+			STM_EVAL_LEDToggle(LED_ORANGE);
+		}
 		vTaskDelay(1000/portTICK_RATE_MS);
 	}
+	STM_EVAL_LEDOff(LED_ORANGE);
 	playSound(coffeeSelected);
-	currState =cyclingCoffeeTypes;
+	numCoffeesRunning--;
+	if(numCoffeesRunning == 0) {
+		currState = cyclingCoffeeTypes;
+	}
 	vTaskDelete(NULL);
 }
 
@@ -597,11 +612,17 @@ void vCountDownEspresso(void* pvParameters){
 	int i = 0; 
 	int timeRequired = getCoffeeTime()*2;
 	for(i = 0; i< timeRequired; i++){
-		STM_EVAL_LEDToggle(LED_RED);
+		if(currState != cyclingCoffeeTypes) {
+			STM_EVAL_LEDToggle(LED_RED);
+		}
 		vTaskDelay(1000/portTICK_RATE_MS);
 	}
+	STM_EVAL_LEDOff(LED_RED);
 	playSound(coffeeSelected);
-	currState = cyclingCoffeeTypes;
+	numCoffeesRunning--;
+	if(numCoffeesRunning == 0) {
+		currState = cyclingCoffeeTypes;
+	}
 	vTaskDelete(NULL);
 }
 
