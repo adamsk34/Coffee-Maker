@@ -28,10 +28,15 @@ Project File Date:  03/12/2020
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'freertos_project'
 compiling main.c...
+Source\main.c(649): warning:  #177-D: variable "wait"  was declared but never referenced
+  		int wait = 0;
+Source\main.c(651): warning:  #177-D: variable "frequence"  was declared but never referenced
+  		int frequence = 0;
+Source\main.c: 2 warnings, 0 errors
 linking...
-Program Size: Code=26608 RO-data=488 RW-data=300 ZI-data=78852  
+Program Size: Code=26628 RO-data=488 RW-data=300 ZI-data=78852  
 FromELF: creating hex file...
-".\Output\freertos_project.axf" - 0 Error(s), 0 Warning(s).
+".\Output\freertos_project.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Software Packages used:</h2>
 

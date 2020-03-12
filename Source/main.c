@@ -283,45 +283,45 @@ void vIdle(void *pvParameters) {
 }
 
 void vServeEspresso(void *pvParameters) {
-	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
+	TIM3->CCR1 = SERVO_POSITION_NEUTRAL;
 	vTaskDelay(1000);
 	
-	TIM4->CCR1 = SERVO_POSITION_ESPRESSO;
+	TIM3->CCR1 = SERVO_POSITION_ESPRESSO;
 	vTaskDelay(1000);
 	
-	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
+	TIM3->CCR1 = SERVO_POSITION_NEUTRAL;
 	vTaskDelay(1000);
 	
 	vTaskDelete(NULL);
 }
 
 void vServeLatte (void *pvParameters) {
-	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
+	TIM3->CCR1 = SERVO_POSITION_NEUTRAL;
 	vTaskDelay(1000);
 	
-	TIM4->CCR1 = SERVO_POSITION_ESPRESSO;
+	TIM3->CCR1 = SERVO_POSITION_ESPRESSO;
 	vTaskDelay(1000);
 	
-	TIM4->CCR1 = SERVO_POSITION_MILK;
+	TIM3->CCR1 = SERVO_POSITION_MILK;
 	vTaskDelay(1000);
 	
-	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
+	TIM3->CCR1 = SERVO_POSITION_NEUTRAL;
 	vTaskDelay(1000);
 	
 	vTaskDelete(NULL);
 }
 
 void vServeMocha(void *pvParameters) {
-	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
+	TIM3->CCR1 = SERVO_POSITION_NEUTRAL;
 	vTaskDelay(1000);
 	
-	TIM4->CCR1 = SERVO_POSITION_ESPRESSO;
+	TIM3->CCR1 = SERVO_POSITION_ESPRESSO;
 	vTaskDelay(1000);
 	
-	TIM4->CCR1 = SERVO_POSITION_CHOCOLATE_MILK;
+	TIM3->CCR1 = SERVO_POSITION_CHOCOLATE_MILK;
 	vTaskDelay(1000);
 	
-	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
+	TIM3->CCR1 = SERVO_POSITION_NEUTRAL;
 	vTaskDelay(1000);
 	
 	vTaskDelete(NULL);
@@ -410,30 +410,30 @@ void setSysTick(void){
 void InitServos (void){ 
     GPIO_InitTypeDef GPIO_InitStructure;
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-    //Initialize PB6 (TIM4 Ch1) and PB7 (TIM4 Ch2)
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+    //Initialize PB4 (TIM3 Ch1) and PB5 (TIM3 Ch2)
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;    // GPIO_High_Speed
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
     GPIO_Init(GPIOB, &GPIO_InitStructure);
     // Assign Alternate Functions to pins
-    GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_TIM4);
-    GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_TIM4);
+    GPIO_PinAFConfig(GPIOB, GPIO_PinSource4, GPIO_AF_TIM3);
+    GPIO_PinAFConfig(GPIOB, GPIO_PinSource5, GPIO_AF_TIM3);
 }
 
 void InitPWMTimer4(void) {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
-  //TIM4 Clock Enable
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
+  //TIM3 Clock Enable
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
   // Time Base Configuration for 50Hz
   TIM_TimeBaseStructure.TIM_Period = 20000 - 1;
   TIM_TimeBaseStructure.TIM_Prescaler = 84 -1;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
-  TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
-  TIM_Cmd(TIM4, ENABLE);
+  TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+  TIM_Cmd(TIM3, ENABLE);
 }
 
 void SetupPWM(void) {
@@ -444,11 +444,11 @@ void SetupPWM(void) {
   TIM_OCInitStructure.TIM_Pulse = 0; // Initial duty cycle at 0%
   TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High; // HIGH output compare active
   // Set the output capture channel 1 and 2 (upto 4)
-  TIM_OC1Init(TIM4, &TIM_OCInitStructure); // Channel 1
-  TIM_OC1PreloadConfig(TIM4, TIM_OCPreload_Enable);
-  TIM_OC2Init(TIM4, &TIM_OCInitStructure); // Channel 2
-  TIM_OC2PreloadConfig(TIM4, TIM_OCPreload_Enable);
-  TIM_ARRPreloadConfig(TIM4, ENABLE);
+  TIM_OC1Init(TIM3, &TIM_OCInitStructure); // Channel 1
+  TIM_OC1PreloadConfig(TIM3, TIM_OCPreload_Enable);
+  TIM_OC2Init(TIM3, &TIM_OCInitStructure); // Channel 2
+  TIM_OC2PreloadConfig(TIM3, TIM_OCPreload_Enable);
+  TIM_ARRPreloadConfig(TIM3, ENABLE);
 }
 
 // ************************************** Timers **************************************
@@ -664,14 +664,15 @@ void playSound(int coffeeType){
 			beepTimes = 6;
 		}
 		
+		
 		while(beepTimes >0){
-				SystemInit();
-				RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-				beep = 0;
+				SystemInit();// can go outside while()
+				RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);// can go outside while()
 				codec_init();
 				codec_ctrl_init();//----------------------------moves the servo
-				I2S_Cmd(CODEC_I2S, ENABLE);
+				I2S_Cmd(CODEC_I2S, ENABLE);// must go after codec...
 				initFilter(&filt);
+				beep = 0;
 				while(beep != interval)
 				{
 						if (SPI_I2S_GetFlagStatus(CODEC_I2S, SPI_I2S_FLAG_TXE))
@@ -692,10 +693,7 @@ void playSound(int coffeeType){
 				}
 				stop();
 				beepTimes --;
-				wait = frequence * interval;
-				while(wait > 0){
-					wait --;
-				}
+				NOTEAMPLITUDE += 10000;
 		}
 }
 
