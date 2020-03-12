@@ -412,6 +412,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\stm32f4xx_it.c</FilePath>
             </File>
+            <File>
+              <FileName>codec.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\codec.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

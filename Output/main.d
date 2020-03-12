@@ -46,3 +46,4 @@
 .\output\main.o: .\FreeRTOS\include\task.h
 .\output\main.o: .\FreeRTOS\include\list.h
 .\output\main.o: .\FreeRTOS\include\croutine.h
+.\output\main.o: .\Include\codec.h

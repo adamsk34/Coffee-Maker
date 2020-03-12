@@ -16,8 +16,8 @@
 #define SERVO_POSITION_ESPRESSO 1100
 #define SERVO_POSITION_MILK 1800
 #define SERVO_POSITION_CHOCOLATE_MILK 2200
-double  NOTEFREQUENCY = 0.015;	
-double NOTEAMPLITUDE = 500.0;		
+double  NOTEFREQUENCY = 0.015;
+double NOTEAMPLITUDE = 500.0;
 
 void vButtonEventGenerator(void *pvParameters);
 void vButtonListener(void *pvParameters);
@@ -604,7 +604,6 @@ void vCountDownEspresso(void* pvParameters){
 	currState = cyclingCoffeeTypes;
 	vTaskDelete(NULL);
 }
-
 
 int getCoffeeTime(void){
 	int result = 0;
