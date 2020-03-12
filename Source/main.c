@@ -283,7 +283,6 @@ void vIdle(void *pvParameters) {
 }
 
 void vServeEspresso(void *pvParameters) {
-	
 	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
 	vTaskDelay(1000);
 	
@@ -297,7 +296,6 @@ void vServeEspresso(void *pvParameters) {
 }
 
 void vServeLatte (void *pvParameters) {
-	
 	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
 	vTaskDelay(1000);
 	
@@ -314,7 +312,6 @@ void vServeLatte (void *pvParameters) {
 }
 
 void vServeMocha(void *pvParameters) {
-	
 	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
 	vTaskDelay(1000);
 	
@@ -666,12 +663,13 @@ void playSound(int coffeeType){
 			NOTEFREQUENCY = 0.015;
 			beepTimes = 6;
 		}
+		
 		while(beepTimes >0){
 				SystemInit();
 				RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
 				beep = 0;
 				codec_init();
-				codec_ctrl_init();
+				codec_ctrl_init();//----------------------------moves the servo
 				I2S_Cmd(CODEC_I2S, ENABLE);
 				initFilter(&filt);
 				while(beep != interval)
