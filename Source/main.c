@@ -6,6 +6,7 @@
 #include "queue.h"
 #include "task.h"
 #include "croutine.h"
+#include "codec.h"
 
 #define STACK_SIZE_MIN	128	/* usStackDepth	- the stack size DEFINED IN WORDS.*/
 #define DEBOUNCE_WINDOW 20
@@ -15,6 +16,8 @@
 #define SERVO_POSITION_ESPRESSO 1100
 #define SERVO_POSITION_MILK 1800
 #define SERVO_POSITION_CHOCOLATE_MILK 2200
+#define NOTEFREQUENCY 0.015
+#define NOTEAMPLITUDE 500.0		
 
 void vButtonEventGenerator(void *pvParameters);
 void vButtonListener(void *pvParameters);
@@ -26,6 +29,12 @@ void vWaitIfLongPressed(void *pvParameters);
 void vServeEspresso(void *pvParameters);
 void vServeLatte(void *pvParameters);
 void vServeMocha(void *pvParameters);
+void vCountDown(void *pvParameters);
+void vCountDownEspresso(void *pvParameters);
+void vCountDownLatte(void *pvParameters);
+void vCountDownMocha(void *pvParameters);
+
+void vTestSound(void*pvParameters);
 
 void doublePressButtonEvent(void);
 void longPressButtonEvent(void);
@@ -39,11 +48,26 @@ void enableDebounceInterrupt(void);
 
 void setSysTick(void);
 void InitServos (void);
-void InitPWMTimer4(void);
+void InitPWMTimer3(void);
 void SetupPWM(void);
 
+typedef struct {
+		float tabs[8];
+		float params[8];
+		uint8_t currIndex;
+} fir_8;
+
+int getCoffeeTime(void);
+void playSound(int);
+float updateFilter(fir_8* theFilter, float newValue);
+void initFilter(fir_8* theFilter);
+void changeCoffeeTime(void);// increase time of selected coffee type by 1
+void resetCoffeeTime(void); //change time of selected coffee type to be 0 
+
 enum states {
-	cyclingCoffeeTypes
+	cyclingCoffeeTypes,
+	countDown,
+	programming//to program time
 };
 int currState = cyclingCoffeeTypes;
 
@@ -84,6 +108,25 @@ TickType_t ticksLastUnpress = NULL;
 GPIO_InitTypeDef GPIO_Initstructure;
 TIM_TimeBaseInitTypeDef timer_InitStructure;
 
+int espressoTime = 1;//----------------------- change back later
+int milkTime = 1;
+int chocoMilkTime = 1;
+
+int hasBeenP1 = 0;
+int hasBeenP2 = 0;
+int hasBeenP3 = 0;
+
+//int countDown = 0;//false; It is 1(true) if start to count down
+
+//====gobal value for sound function================
+GPIO_InitTypeDef GPIO_InitStructure;
+volatile uint32_t sampleCounter = 0;
+volatile int16_t sample = 0;
+double sawWave = 0.0;
+float filteredSaw = 0.0;
+fir_8 filt;
+//===================================================
+
 int main(void) {
 	NVIC_PriorityGroupConfig( NVIC_PriorityGroup_4 );
 	
@@ -97,8 +140,9 @@ int main(void) {
   
 	setSysTick();
 	InitServos();
-	InitPWMTimer4();
+	InitPWMTimer3();
 	SetupPWM();
+	
 	
 	xTaskCreate( vIdle, (const char*)"Idle Task",
 		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
@@ -112,8 +156,22 @@ int main(void) {
 	xTaskCreate( vButtonEventGenerator, (const char*)"Button Event Generator Task",
 		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 	
+	//xTaskCreate( vTestSound, (const char*)"Button Event Generator Task",
+		//STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 	vTaskStartScheduler();
+	
 }
+
+//-----------for test sound---------------
+void vTestSound(void *pvParameters){
+	playSound(mochaCoffee);
+	playSound(latteCoffee);
+	playSound(espressoCoffee);
+	vTaskDelete(NULL);
+
+}
+//----------------------------------------
+
 
 void nextCoffeeType() {
 	if(coffeeSelected == espressoCoffee) {
@@ -191,9 +249,6 @@ void vButtonEventGenerator(void *pvParameters) {
 					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 			}
 			ticksLastPress = xTaskGetTickCount();
-			
-			
-			
 			xTaskCreate( vWaitIfLongPressed, (const char*)"Wait If Long Pressed Task",
 					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
 		} else if(unpressButtonOccurred) {
@@ -213,19 +268,24 @@ void vButtonEventGenerator(void *pvParameters) {
 
 void vShowCoffeeSelected(void *pvParameters) {
 	while(1) {
-		if(coffeeSelected == mochaCoffee) {
+		if(currState ==cyclingCoffeeTypes &&coffeeSelected == mochaCoffee) {
 			STM_EVAL_LEDOff(LED_BLUE);
+			STM_EVAL_LEDOff(LED_RED);
 			STM_EVAL_LEDOn(LED_ORANGE);// orange on
-			STM_EVAL_LEDOff(LED_RED);
-		} else if(coffeeSelected == espressoCoffee) {
-			STM_EVAL_LEDOff(LED_BLUE);
-			STM_EVAL_LEDOff(LED_ORANGE);
-			STM_EVAL_LEDOn(LED_RED); // red on
-		} else if(coffeeSelected == latteCoffee) {
-			STM_EVAL_LEDOn(LED_BLUE);// blue on
-			STM_EVAL_LEDOff(LED_ORANGE);
-			STM_EVAL_LEDOff(LED_RED);
+			
+		} else if(currState == cyclingCoffeeTypes && coffeeSelected == espressoCoffee) {
+				STM_EVAL_LEDOff(LED_BLUE);
+				STM_EVAL_LEDOff(LED_ORANGE);
+				STM_EVAL_LEDOn(LED_RED); // red on
+		} else if(currState == cyclingCoffeeTypes && coffeeSelected == latteCoffee) {
+				STM_EVAL_LEDOff(LED_ORANGE);
+				STM_EVAL_LEDOff(LED_RED);
+				STM_EVAL_LEDOn(LED_BLUE);// blue on
 		}
+		else{
+			continue;
+		}
+		
 	}
 }
 
@@ -237,12 +297,14 @@ void vIdle(void *pvParameters) {
 }
 
 void vServeEspresso(void *pvParameters) {
-	
+	int i = 0;
 	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
 	vTaskDelay(1000);
 	
 	TIM4->CCR1 = SERVO_POSITION_ESPRESSO;
-	vTaskDelay(1000);
+	for(i = 0; i < espressoTime*2; i++){
+		vTaskDelay(1000/portTICK_RATE_MS);
+	}
 	
 	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
 	vTaskDelay(1000);
@@ -251,15 +313,20 @@ void vServeEspresso(void *pvParameters) {
 }
 
 void vServeLatte (void *pvParameters) {
-	
+	int i = 0;
 	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
 	vTaskDelay(1000);
 	
 	TIM4->CCR1 = SERVO_POSITION_ESPRESSO;
-	vTaskDelay(1000);
-	
+	//vTaskDelay(1000);
+	for(i = 0; i < espressoTime*2; i ++){
+		vTaskDelay(1000/portTICK_RATE_MS);
+	}
 	TIM4->CCR1 = SERVO_POSITION_MILK;
-	vTaskDelay(1000);
+	//vTaskDelay(1000);
+	for(i = 0; i < milkTime*2; i ++){
+		vTaskDelay(1000/portTICK_RATE_MS);
+	}
 	
 	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
 	vTaskDelay(1000);
@@ -268,15 +335,21 @@ void vServeLatte (void *pvParameters) {
 }
 
 void vServeMocha(void *pvParameters) {
-	
+	int i = 0;
 	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
 	vTaskDelay(1000);
 	
 	TIM4->CCR1 = SERVO_POSITION_ESPRESSO;
-	vTaskDelay(1000);
+	//vTaskDelay(1000);
+	for(i = 0; i < espressoTime * 2; i ++){
+		vTaskDelay(1000/portTICK_RATE_MS);
+	}
 	
 	TIM4->CCR1 = SERVO_POSITION_CHOCOLATE_MILK;
-	vTaskDelay(1000);
+	//vTaskDelay(1000);
+	for(i = 0; i < chocoMilkTime* 2; i ++){
+		vTaskDelay(1000/portTICK_RATE_MS);
+	}
 	
 	TIM4->CCR1 = SERVO_POSITION_NEUTRAL;
 	vTaskDelay(1000);
@@ -291,19 +364,28 @@ void vServeMocha(void *pvParameters) {
 void doublePressButtonEvent() {
 	
 	if(currState == cyclingCoffeeTypes) {
-		
+		currState = countDown;
 		switch(coffeeSelected) {
 			case espressoCoffee:
 				xTaskCreate( vServeEspresso, (const char*)"Serve Espresso Task",
 					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
+				xTaskCreate( vCountDownEspresso, (const char*)"CountDown Espresso Task",
+					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
+				coffeeSelected = mochaCoffee;
 				break;
 			case latteCoffee:
 				xTaskCreate( vServeLatte, (const char*)"Serve Latte Task",
 					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
+				xTaskCreate( vCountDownLatte, (const char*)"CountDown Latte Task",
+					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
+				coffeeSelected = mochaCoffee;
 				break;
 			case mochaCoffee:
 				xTaskCreate( vServeMocha, (const char*)"Serve Mocha Task",
 					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
+				xTaskCreate( vCountDownMocha, (const char*)"CountDown Task",
+					STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
+				coffeeSelected = mochaCoffee;
 				break;
 		}
 	}
@@ -312,7 +394,13 @@ void doublePressButtonEvent() {
 // long press (not single press, not double press)
 // only called once for each long press
 void longPressButtonEvent() {
-	
+	if(currState == programming){
+		currState = cyclingCoffeeTypes;
+	}
+	else{
+		currState = programming;
+		resetCoffeeTime();
+	}
 }
 
 // single press (not double press, not long press)
@@ -322,6 +410,11 @@ void singlePressButtonEvent() {
 		case cyclingCoffeeTypes:
 			nextCoffeeType();
 			break;
+		case programming:
+			changeCoffeeTime();
+			break;
+		case countDown:
+			currState = cyclingCoffeeTypes;
 	}
 }
 
@@ -329,7 +422,7 @@ void singlePressButtonEvent() {
 // this event can be a part of a single, double, or long press
 // only called once for each press
 void pressButtonEvent() {
-	
+
 }
 
 // very recently, finger taken off button (accounts for debouncing
@@ -351,29 +444,29 @@ void InitServos (void){
     GPIO_InitTypeDef GPIO_InitStructure;
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
     //Initialize PB6 (TIM4 Ch1) and PB7 (TIM4 Ch2)
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;    // GPIO_High_Speed
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
     GPIO_Init(GPIOB, &GPIO_InitStructure);
     // Assign Alternate Functions to pins
-    GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_TIM4);
-    GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_TIM4);
+    GPIO_PinAFConfig(GPIOB, GPIO_PinSource4, GPIO_AF_TIM3);
+    GPIO_PinAFConfig(GPIOB, GPIO_PinSource5, GPIO_AF_TIM3);
 }
 
-void InitPWMTimer4(void) {
+void InitPWMTimer3(void) {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   //TIM4 Clock Enable
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
   // Time Base Configuration for 50Hz
   TIM_TimeBaseStructure.TIM_Period = 20000 - 1;
   TIM_TimeBaseStructure.TIM_Prescaler = 84 -1;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
-  TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
-  TIM_Cmd(TIM4, ENABLE);
+  TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+  TIM_Cmd(TIM3, ENABLE);
 }
 
 void SetupPWM(void) {
@@ -384,11 +477,11 @@ void SetupPWM(void) {
   TIM_OCInitStructure.TIM_Pulse = 0; // Initial duty cycle at 0%
   TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High; // HIGH output compare active
   // Set the output capture channel 1 and 2 (upto 4)
-  TIM_OC1Init(TIM4, &TIM_OCInitStructure); // Channel 1
-  TIM_OC1PreloadConfig(TIM4, TIM_OCPreload_Enable);
-  TIM_OC2Init(TIM4, &TIM_OCInitStructure); // Channel 2
-  TIM_OC2PreloadConfig(TIM4, TIM_OCPreload_Enable);
-  TIM_ARRPreloadConfig(TIM4, ENABLE);
+  TIM_OC1Init(TIM3, &TIM_OCInitStructure); // Channel 1
+  TIM_OC1PreloadConfig(TIM3, TIM_OCPreload_Enable);
+  TIM_OC2Init(TIM3, &TIM_OCInitStructure); // Channel 2
+  TIM_OC2PreloadConfig(TIM3, TIM_OCPreload_Enable);
+  TIM_ARRPreloadConfig(TIM3, ENABLE);
 }
 
 // ************************************** Timers **************************************
@@ -416,7 +509,7 @@ void enableDebounceInterrupt()
 		nvicStructure.NVIC_IRQChannelSubPriority = 1;
 		nvicStructure.NVIC_IRQChannelCmd = ENABLE;
 		NVIC_Init(&nvicStructure);
-}
+}                                                                                                                       
 
 // Debounce window is over, checks where button is, assumes that is valid
 void TIM2_IRQHandler()
@@ -452,3 +545,179 @@ void TIM2_IRQHandler()
 		
 	}
 }
+
+void changeCoffeeTime(){
+	if(coffeeSelected == latteCoffee){
+		milkTime ++;
+	}
+	else if(coffeeSelected == espressoCoffee){
+		espressoTime ++;
+	}
+	else if(coffeeSelected == mochaCoffee){
+		chocoMilkTime ++;
+	}
+}
+
+void resetCoffeeTime(){
+	if(coffeeSelected == latteCoffee){
+		milkTime = 0;
+	}
+	else if(coffeeSelected == espressoCoffee){
+		espressoTime = 0;
+	}
+	else if(coffeeSelected == mochaCoffee){
+		chocoMilkTime = 0;
+	}
+}
+
+
+
+
+//*************************CountDown Timer**************************************
+
+void vCountDownLatte(void* pvParameters){
+	int i = 0; 
+	int timeRequired = espressoTime + milkTime;
+	timeRequired = timeRequired*2;
+	for(i = 0; i< timeRequired; i++){
+		STM_EVAL_LEDToggle(LED_BLUE);
+		vTaskDelay(1000/portTICK_RATE_MS);
+	}
+	playSound(latteCoffee);
+	currState = cyclingCoffeeTypes;
+	vTaskDelete(NULL);
+}
+
+void vCountDownMocha(void* pvParameters){
+	int i = 0; 
+	int timeRequired = espressoTime+ chocoMilkTime;
+	timeRequired = timeRequired * 2;
+	for(i = 0; i< timeRequired; i++){
+		STM_EVAL_LEDToggle(LED_ORANGE);
+		vTaskDelay(1000/portTICK_RATE_MS);
+	}
+	playSound(mochaCoffee);
+	currState =cyclingCoffeeTypes;
+	vTaskDelete(NULL);
+}
+
+void vCountDownEspresso(void* pvParameters){
+	int i = 0; 
+	int timeRequired = espressoTime * 2;
+	for(i = 0; i< timeRequired; i++){
+		STM_EVAL_LEDToggle(LED_RED);
+		vTaskDelay(1000/portTICK_RATE_MS);
+	}
+	playSound(espressoCoffee);
+	currState = cyclingCoffeeTypes;
+	
+	vTaskDelete(NULL);
+}
+
+//*************************Sound************************************************
+void playSound(int coffeetype){
+		int beep = 0;
+		int wait = 0;
+		int beepTimes = 0;
+		int frequence = 0;
+		int interval = 1000000;
+	
+		if(coffeetype == mochaCoffee){
+			frequence = 11;
+			beepTimes = 3;
+			interval = interval*2;
+		}
+		else if(coffeetype == espressoCoffee){
+			frequence = 1;
+			beepTimes = 6;
+		}
+		else if(coffeetype == latteCoffee){
+			frequence = 6;
+			beepTimes = 2;
+			interval = interval*5;
+		}
+		while(beepTimes >0){
+				SystemInit();
+				//enables GPIO clock for PortD
+				RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
+
+				beep = 0;
+				codec_init();
+				codec_ctrl_init();
+				I2S_Cmd(CODEC_I2S, ENABLE);
+				initFilter(&filt);
+				while(beep != interval)
+				{
+			
+						if (SPI_I2S_GetFlagStatus(CODEC_I2S, SPI_I2S_FLAG_TXE))
+						{
+								SPI_I2S_SendData(CODEC_I2S, sample);
+
+								//only update on every second sample to insure that L & R ch. have the same sample value
+								if (sampleCounter & 0x00000001)
+								{
+										sawWave += NOTEFREQUENCY;
+										if (sawWave > 1.0)
+												sawWave -= 2.0;
+
+										filteredSaw = updateFilter(&filt, sawWave);
+										sample = (int16_t)(NOTEAMPLITUDE*filteredSaw);
+								}
+								sampleCounter++;
+						}
+						beep++;
+				}
+				stop();
+				beepTimes --;
+				wait = frequence * interval;
+				while(wait > 0){
+					wait --;
+				}
+		}
+}
+
+// a very crude FIR lowpass filter
+float updateFilter(fir_8* filt, float val)
+{
+		uint16_t valIndex;
+		uint16_t paramIndex;
+		float outval = 0.0;
+
+		valIndex = filt->currIndex;
+		filt->tabs[valIndex] = val;
+
+		for (paramIndex=0; paramIndex<8; paramIndex++)
+		{
+				outval += (filt->params[paramIndex]) * (filt->tabs[(valIndex+paramIndex)&0x07]);
+		}
+
+		valIndex++;
+		valIndex &= 0x07;
+
+		filt->currIndex = valIndex;
+
+		return outval;
+}
+
+void initFilter(fir_8* theFilter)
+{
+		uint8_t i;
+
+		theFilter->currIndex = 0;
+
+		for (i=0; i<8; i++)
+				theFilter->tabs[i] = 0.0;
+
+		theFilter->params[0] = 0.01;
+		theFilter->params[1] = 0.05;
+		theFilter->params[2] = 0.12;
+		theFilter->params[3] = 0.32;
+		theFilter->params[4] = 0.32;
+		theFilter->params[5] = 0.12;
+		theFilter->params[6] = 0.05;
+		theFilter->params[7] = 0.01;
+}
+
+
+
+
