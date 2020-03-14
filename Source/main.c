@@ -36,8 +36,6 @@ void vCountDownEspresso(void *pvParameters);
 void vCountDownLatte(void *pvParameters);
 void vCountDownMocha(void *pvParameters);
 
-void vTestSound(void*pvParameters);
-
 void doublePressButtonEvent(void);
 void longPressButtonEvent(void);
 void pressButtonEvent(void);
@@ -50,7 +48,7 @@ void enableDebounceInterrupt(void);
 
 void setSysTick(void);
 void InitServos (void);
-void InitPWMTimer4(void);
+void InitPWMTimer3(void);
 void SetupPWM(void);
 
 typedef struct {
@@ -104,8 +102,6 @@ int lpDisableSinglePress = 0;// false
 
 int numCoffeesRunning = 0;
 
-//volatile uint32_t msTicks;// Counts 1ms timeTicks
-
 TickType_t ticksLastPress = NULL;
 TickType_t ticksLastUnpress = NULL;
 
@@ -115,8 +111,6 @@ TIM_TimeBaseInitTypeDef timer_InitStructure;
 int espressoTime = 2;
 int milkTime = 2;
 int chocoMilkTime = 3;
-
-//int countDown = 0;//false; It is 1(true) if start to count down
 
 //====gobal value for sound function================
 GPIO_InitTypeDef GPIO_InitStructure;
@@ -140,11 +134,8 @@ int main(void) {
   
 	setSysTick();
 	InitServos();
-	InitPWMTimer4();
+	InitPWMTimer3();
 	SetupPWM();
-	
-	//xTaskCreate(vTestSound, (const char*)"Countdown Task",
-		//STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL);
 	
 	xTaskCreate( vIdle, (const char*)"Idle Task",
 		STACK_SIZE_MIN, NULL, tskIDLE_PRIORITY, NULL );
@@ -160,16 +151,6 @@ int main(void) {
 	
 	vTaskStartScheduler();
 }
-
-//-----------for test sound---------------
-void vTestSound(void *pvParameters){
-	//vPlaySound(mochaCoffee);
-	//vPlaySound(latteCoffee);
-	//vPlaySound(espressoCoffee);
-	vTaskDelete(NULL);
-
-}
-//----------------------------------------
 
 void nextCoffeeType() {
 	if(coffeeSelected == espressoCoffee) {
@@ -474,7 +455,7 @@ void InitServos (void){
     GPIO_PinAFConfig(GPIOB, GPIO_PinSource5, GPIO_AF_TIM3);
 }
 
-void InitPWMTimer4(void) {
+void InitPWMTimer3(void) {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   //TIM3 Clock Enable
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
@@ -545,7 +526,7 @@ void TIM2_IRQHandler()
 				if(currButtonState == buttonUp) {// true if finger VERY recently pushed button down
 					pressButtonOccurred = 1;// true
 				}
-				currDebounceState = doneDebounce;// false
+				currDebounceState = doneDebounce;
 				currButtonState = buttonDown;
 			} else if(currDebounceState == startDebounce) {
 				currDebounceState = activeDebounce;
@@ -555,7 +536,7 @@ void TIM2_IRQHandler()
 				if(currButtonState == buttonDown) {// true if finger VERY recently taken off button
 					unpressButtonOccurred = 1;// true
 				}
-				currDebounceState = doneDebounce;// false
+				currDebounceState = doneDebounce;
 				currButtonState = buttonUp;
 			} else if(currDebounceState == startDebounce) {
 				currDebounceState = activeDebounce;
@@ -589,9 +570,6 @@ void resetCoffeeTime(){
 	}
 }
 
-
-
-
 //*************************CountDown Timer**************************************
 void vCountDownLatte(void* pvParameters){
 	int i = 0; 
@@ -603,12 +581,8 @@ void vCountDownLatte(void* pvParameters){
 		}
 		vTaskDelay(1000/portTICK_RATE_MS);
 	}
-	STM_EVAL_LEDOff(LED_BLUE);/*
-	vPlaySound(latteCoffee);
-	numCoffeesRunning--;
-	if(numCoffeesRunning == 0) {
-		currState = cyclingCoffeeTypes;
-	}*/
+	STM_EVAL_LEDOff(LED_BLUE);
+	
 	vTaskDelete(NULL);
 }
 
@@ -622,12 +596,8 @@ void vCountDownMocha(void* pvParameters){
 		}
 		vTaskDelay(1000/portTICK_RATE_MS);
 	}
-	STM_EVAL_LEDOff(LED_ORANGE);/*
-	vPlaySound(mochaCoffee);
-	numCoffeesRunning--;
-	if(numCoffeesRunning == 0) {
-		currState = cyclingCoffeeTypes;
-	}*/
+	STM_EVAL_LEDOff(LED_ORANGE);
+	
 	vTaskDelete(NULL);
 }
 
@@ -641,12 +611,8 @@ void vCountDownEspresso(void* pvParameters){
 		}
 		vTaskDelay(1000/portTICK_RATE_MS);
 	}
-	STM_EVAL_LEDOff(LED_RED);/*
-	vPlaySound(latteCoffee);
-	numCoffeesRunning--;
-	if(numCoffeesRunning == 0) {
-		currState = cyclingCoffeeTypes;
-	}*/
+	STM_EVAL_LEDOff(LED_RED);
+	
 	vTaskDelete(NULL);
 }
 
@@ -702,7 +668,7 @@ void vPlaySound(void* pvParameters){
 												sawWave -= 2.0;
 
 										filteredSaw = updateFilter(&filt, sawWave);
-										sample = (int16_t)(NOTEAMPLITUDE*filteredSaw);
+										sample = (int16_t)(((int)NOTEAMPLITUDE)*filteredSaw);
 								}
 								sampleCounter++;
 						}
