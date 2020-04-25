@@ -1,12 +1,14 @@
 # Coffee Maker
 
-This was an academic project made for Real-Time Systems (COMP 4550) during winter 2020 at the University of Manitoba. This project is the logic of a programable coffee maker. It cannot actually make coffee, it merely simulates the process. It is designed for the STM32F4 Microcontroller unit. This project is based on FreeRTOS, a real-time operating system. This project is designed to be used with the [Keil µVision IDE](http://www2.keil.com/mdk5/uvision/).
+This was an academic project made for Real-Time Systems (COMP 4550) during winter 2020 at the University of Manitoba. This project is the logic of a programable coffee maker. It cannot actually make coffee, it merely simulates the process. It is designed for the STM32F4 Microcontroller unit. This project is designed to be used with the [Keil µVision IDE](http://www2.keil.com/mdk5/uvision/).
 
-This project was developed by [@adamsk34](https://github.com/adamsk34) and [@su-dong](https://github.com/su-dong). All original work introduced by this repository is in the file [Source/main.c](Source/main.c).
+This project was developed by [@adamsk34](https://github.com/adamsk34) and [@su-dong](https://github.com/su-dong). This project is based on FreeRTOS, a real-time operating system. All original work introduced by this repository is in the file [Source/main.c](Source/main.c).
 
 ![Picture of all system components](./SystemComponents.jpg)
 
 ## Getting started
+
+Install the [Keil µVision IDE](http://www2.keil.com/mdk5/uvision/) and connect your computer to the the STM32F4 by USB cable.
 
 Clone the repository using this command:
 ```
