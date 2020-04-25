@@ -30,4 +30,4 @@ Attach a speaker or headphones to the 3.5mm jack for audio output.
 
 ### Run the program
 
-The run the program click `build` and `run` from within the µVision IDE.
+To run the program click `build` and `run` from within the µVision IDE.
