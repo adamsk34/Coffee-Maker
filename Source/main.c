@@ -59,7 +59,7 @@ void playSound(int);
 float updateFilter(fir_8 *theFilter, float newValue);
 void initFilter(fir_8 *theFilter);
 void changeCoffeeTime(void); // increase time of selected coffee type by 1
-void resetCoffeeTime(void);	 // change time of selected coffee type to be 0
+void resetCoffeeTime(void); // change time of selected coffee type to be 0
 
 enum states
 {
@@ -492,10 +492,10 @@ void InitPWMTimer3(void)
 void SetupPWM(void)
 {
 	TIM_OCInitTypeDef TIM_OCInitStructure;
-	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;			  // Set output capture as PWM mode
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; // Set output capture as PWM mode
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; // Enable output compare
-	TIM_OCInitStructure.TIM_Pulse = 0;							  // Initial duty cycle at 0%
-	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;	  // HIGH output compare active
+	TIM_OCInitStructure.TIM_Pulse = 0; // Initial duty cycle at 0%
+	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High; // HIGH output compare active
 	// Set the output capture channel 1 and 2 (upto 4)
 	TIM_OC1Init(TIM3, &TIM_OCInitStructure); // Channel 1
 	TIM_OC1PreloadConfig(TIM3, TIM_OCPreload_Enable);
